@@ -1,0 +1,53 @@
+# Node modules
+node_modules
+
+# Log files
+npm-debug.log*
+.DS_Store
+
+# Coverage directory
+coverage
+
+# Build output directories
+dist
+
+# Docker files
+Dockerfile
+Dockerfile.prod
+Dockerfile.dev
+
+# Docker Compose files
+docker-compose.yml
+docker-compose.prod.yml
+docker-compose.dev.yml
+
+# Git directory
+.git
+.gitignore
+
+# GitHub directory
+.github
+
+# VS Code settings
+.vscode
+
+# Husky hooks
+.husky
+
+# Ignore README.md only if it's not required in the Docker image
+README.md
+
+# any environment file
+.env
+*.env.*
+*.env.example
+.env.development.docker
+.env.test.docker
+.env.production.docker
+
+# Other Folders 
+.husky/
+bin/
+lambdas/
+scratch/
+scripts/

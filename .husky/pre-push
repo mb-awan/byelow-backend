@@ -1,0 +1,13 @@
+# Get the name of the branch being pushed to
+branch_name=$(git symbolic-ref HEAD | sed -e 's,.*/\(.*\),\1,')
+
+# Check if the branch is main or dev
+if [ "$branch_name" = "main" ] || [ "$branch_name" = "dev" ]; then
+  echo "Pushing to $branch_name branch is not allowed. Create a branch and make a pull request instead."
+  exit 1
+fi
+
+# npm run test
+
+# If not pushing to main or dev, run the build script
+npm run build

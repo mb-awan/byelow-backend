@@ -1,0 +1,40 @@
+version: '3.8'
+
+services:
+  api-server:
+    container_name: dev-blog-api-server
+    build:
+      context: .
+      dockerfile: Dockerfile.dev
+    ports:
+      - '4000:4000'
+    env_file:
+      - .env.development.docker
+    volumes:
+      - .:/usr/src/app
+      - /usr/src/app/node_modules
+    depends_on:
+      - mongo_db
+      - redis
+
+  mongo_db:
+    container_name: dev-unify-posts-mongo-db
+    image: mongo:latest
+    restart: always
+    ports:
+      - '2717:27017' # Map port 2717 on host to port 27017 in the container
+    volumes:
+      - mongo_db_unify_posts:/data/db
+
+  redis:
+    image: redis:latest
+    container_name: dev-unify-posts-redis
+    ports:
+      - '6379:6379'
+
+volumes:
+  mongo_db_unify_posts:
+
+networks:
+  app-network:
+    driver: bridge

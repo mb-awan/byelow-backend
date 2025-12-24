@@ -1,0 +1,10 @@
+# Get the name of the branch being committed to
+branch_name=$(git symbolic-ref HEAD | sed -e 's,.*/\(.*\),\1,')
+
+# Check if the branch is main or dev
+if [ "$branch_name" = "main" ] || [ "$branch_name" = "dev" ]; then
+  echo "Committing directly to $branch_name branch is not allowed, please create a branch and open a pull request."
+  exit 1
+fi
+
+npx lint-staged

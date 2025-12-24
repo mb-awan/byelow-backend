@@ -1,0 +1,93 @@
+version: '3.8'
+
+services:
+  # API Server (Express Backend)
+  api-server:
+    container_name: unify-posts-api-server
+    build:
+      context: . # Build the image locally using Dockerfile
+      dockerfile: Dockerfile
+    image: unifyposts/unify-posts-backend-api-server:latest # Ensure unique image name
+    ports:
+      - '4000:4000' # Expose API on port 4000
+    env_file:
+      - .env.production # Load environment variables from .env.production
+    volumes:
+      - .env.production:/usr/src/app/.env.production # Mount .env.production into the container at runtime
+    depends_on:
+      - redis # Ensure Redis starts before the API server
+    networks:
+      - app-network
+
+  # Worker Service (BullMQ Worker)
+  worker:
+    build:
+      context: . # Build the image locally using Dockerfile
+      dockerfile: Dockerfile.worker # Use this Dockerfile
+    container_name: unify-posts-worker
+    image: unifyposts/unify-posts-backend-worker:latest # Unique image name for worker
+    env_file:
+      - .env.production
+    volumes:
+      - .env.production:/usr/src/app/.env.production # Mount .env.production into the container at runtime
+    command: node dist/jobs/worker.js # Run the worker script (compiled)
+    depends_on:
+      - redis # Ensure Redis is available for the worker
+    networks:
+      - app-network # Connect to the app-network
+
+  # Post Scheduler Service (BullMQ Scheduler for Posts)
+  posts-scheduler:
+    build:
+      context: . # Build the image locally using Dockerfile
+      dockerfile: Dockerfile.postScheduler # Use this Dockerfile
+    container_name: unify-posts-posts-scheduler
+    image: unifyposts/unify-posts-backend-posts-scheduler:latest # Unique image name for post-scheduler
+    env_file:
+      - .env.production
+    volumes:
+      - .env.production:/usr/src/app/.env.production # Mount .env.production into the container at runtime
+    command: node dist/jobs/postsScheduler.js # Run the post scheduler (compiled)
+    depends_on:
+      - redis # Ensure Redis is available for the scheduler
+    networks:
+      - app-network # Connect to the app-network
+
+  # Status Update Scheduler Service (BullMQ Scheduler for Status Updates)
+  status-update-scheduler:
+    build:
+      context: . # Build the image locally using Dockerfile
+      dockerfile: Dockerfile.postStatusUpdateScheduler # Use this Dockerfile
+    container_name: unify-posts-status-update-scheduler
+    image: unifyposts/unify-posts-backend-status-update-scheduler:latest # Unique image name for status-update-scheduler
+    env_file:
+      - .env.production
+    volumes:
+      - .env.production:/usr/src/app/.env.production # Mount .env.production into the container at runtime
+    command: node dist/jobs/statusUpdateScheduler.js # Run the status update scheduler (compiled)
+    depends_on:
+      - redis # Ensure Redis is available for the scheduler
+    networks:
+      - app-network # Connect to the app-network
+
+  # Redis Service
+  redis:
+    image: redis:alpine # Use the official Redis image (alpine version is lightweight)
+    container_name: unify-posts-redis
+    ports:
+      - '6379:6379' # Expose Redis on port 6379
+    networks:
+      - app-network # Connect to the app-network
+    volumes:
+      - redis-data:/data # Persist Redis data to a volume to avoid data loss on container restart
+    restart: always # Ensure Redis always restarts on failure
+
+# Volumes for persistent Redis data storage and node_modules
+volumes:
+  redis-data: # Redis data persistence volume
+  node_modules: # Named volume for node_modules to avoid overwriting it
+
+# Define a custom network for internal communication between services
+networks:
+  app-network:
+    driver: bridge # Use the bridge network driver for inter-service communication

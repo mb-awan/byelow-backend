@@ -1,0 +1,19 @@
+#!/bin/bash
+
+# Get the desired Node.js version from .nvmrc
+desired_version=$(cat .nvmrc)
+
+# Check if the desired version is already installed
+if ! nvm ls | grep -q "$desired_version"; then
+    # If not installed, install the desired version
+    echo "Node.js $desired_version is not installed. Installing..."
+    nvm install "$desired_version"
+fi
+
+# Check if the currently active version is the same as the desired version
+current_version=$(node -v)
+if [[ "$current_version" != "$desired_version" ]]; then
+    # If the current version is different from the desired version, switch to the desired version
+    echo "Switching to Node.js $desired_version..."
+    nvm use "$desired_version"
+fi
