@@ -37,3 +37,11 @@ const RoleSchema: Schema = new Schema<IRoleDoc>(
 
 export const Role = mongoose.model<IRoleDoc>(DB_MODELS.ROLE, RoleSchema);
 
+
+
+
+
+
+
+
+

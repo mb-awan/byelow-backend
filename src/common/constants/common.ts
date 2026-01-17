@@ -5,6 +5,7 @@ export const API_ROUTES = {
   PROJECTS: '/projects',
   SEO_PROJECTS: '/seo-projects',
   DA_PA_CHECKER: '/da-pa-checker',
+  ANALYZE: '/analyze',
 };
 
 export const DB_MODELS = {
@@ -14,4 +15,5 @@ export const DB_MODELS = {
   WORKSPACE: 'workspaces',
   SEO_PROJECT: 'seo_projects',
   DAPA_ANALYSIS: 'dapa_analyses',
+  ANALYZE_DOMAIN_RESULT: 'analyze_domain_results',
 };

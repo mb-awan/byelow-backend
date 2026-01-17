@@ -155,8 +155,8 @@ export const registerUser = async (req: Request, res: Response) => {
     }
 
     return APIResponse.success(res, 'User registered successfully', { token }, StatusCodes.CREATED);
-  } catch (error) {
-    logger.error('Error while registering 456', JSON.stringify(error));
+  } catch (error: any) {
+    logger.error('Error while registering 456', error);
     return APIResponse.error(res, 'Error while registering', error, StatusCodes.INTERNAL_SERVER_ERROR);
   }
 };
@@ -467,7 +467,7 @@ export const loginWithGoogle = async (req: Request, res: Response) => {
       access_type: 'offline',
       client_id: env.GOOGLE_CLIENT_ID,
       prompt: 'consent',
-      redirect_uri: `${env.UNIFY_BACKEND_BASE_URL}${API_ROUTES.AUTH}${AUTH_PATHS.GOOGLE_OAUTH_CALLBACK}`,
+      redirect_uri: `${env.BACKEND_BASE_URL}${API_ROUTES.AUTH}${AUTH_PATHS.GOOGLE_OAUTH_CALLBACK}`,
       response_type: 'code',
       scope: [
         'https://www.googleapis.com/auth/userinfo.email',

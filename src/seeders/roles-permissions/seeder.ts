@@ -52,11 +52,7 @@ const defaultRoles = [
   {
     name: UserRoles.SUB_ADMIN,
     description: 'Sub-administrator with limited admin access',
-    permissions: [
-      AdminPermissions.GET_ALL_USERS,
-      AdminPermissions.READ_ALL_ROLES,
-      AdminPermissions.READ_ROLE,
-    ],
+    permissions: [AdminPermissions.GET_ALL_USERS, AdminPermissions.READ_ALL_ROLES, AdminPermissions.READ_ROLE],
   },
   {
     name: UserRoles.USER,
@@ -113,4 +109,5 @@ export const seedRolesAndPermissions = async () => {
 
   return { permissions, roles };
 };
+
 

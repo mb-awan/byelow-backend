@@ -1,10 +1,10 @@
+import { S3Client } from '@aws-sdk/client-s3';
 import axios from 'axios';
 import bcrypt from 'bcrypt';
 import jwt from 'jsonwebtoken';
 import qs from 'qs';
 
 import { AUTH_PATHS } from '@/apis/auth/router';
-import { S3Client } from '@aws-sdk/client-s3';
 
 import { API_ROUTES } from '../constants/common';
 import { UserRoles } from '../constants/enums';
@@ -25,7 +25,7 @@ export const generateToken = (user: any) => {
     role: user.role?.name || UserRoles.USER,
   };
 
-  const token = jwt.sign(payload, JWT_SECRET_KEY, { expiresIn: JWT_EXPIRES_IN });
+  const token = jwt.sign(payload, JWT_SECRET_KEY as any, { expiresIn: JWT_EXPIRES_IN as any });
 
   return token;
 };

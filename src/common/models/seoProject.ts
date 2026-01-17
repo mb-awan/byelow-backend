@@ -55,3 +55,11 @@ seoProjectSchema.index({ domain: 1 });
 export const SEOProject = mongoose.model<ISEOProject>(DB_MODELS.SEO_PROJECT, seoProjectSchema);
 
 
+
+
+
+
+
+
+
+

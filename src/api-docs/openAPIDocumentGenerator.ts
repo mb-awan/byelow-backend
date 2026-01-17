@@ -26,7 +26,16 @@ export function generateOpenAPIDocument() {
   const generator = new OpenApiGeneratorV3(registry.definitions);
 
   // Build server URL
-  const serverUrl = env.BACKEND_BASE_URL || `http://${env.HOST}:${env.PORT}`;
+  // Use BACKEND_BASE_URL if set, otherwise use HOST:PORT
+  // Note: Server binds to 0.0.0.0 but Swagger should use the actual accessible URL (localhost or HOST)
+  let serverUrl = env.BACKEND_BASE_URL || `http://${env.HOST}:${env.PORT}`;
+
+  // Normalize localhost URLs to use HTTP instead of HTTPS to avoid CORS issues
+  if (serverUrl.includes('localhost') || serverUrl.includes('127.0.0.1') || serverUrl.includes('0.0.0.0')) {
+    serverUrl = serverUrl.replace(/^https:/i, 'http:');
+    // Replace 0.0.0.0 with localhost for Swagger UI (0.0.0.0 is not accessible from browser)
+    serverUrl = serverUrl.replace(/0\.0\.0\.0/g, 'localhost');
+  }
 
   return generator.generateDocument({
     openapi: '3.0.0',

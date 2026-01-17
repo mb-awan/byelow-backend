@@ -29,13 +29,15 @@ export const env = cleanEnv(process.env, {
     default: 'development',
     choices: ['development', 'production', 'test'],
   }),
-  PORT: port({ default: 3000 }),
+  PORT: port({ default: 4000 }),
   HOST: host({ default: 'localhost' }),
   FRONTEND_URL: str({ default: 'http://localhost:3000' }),
-  CORS_ORIGIN: str({ default: 'http://localhost:3001;http://localhost:3000' }),
+  CORS_ORIGIN: str({
+    default: 'http://localhost:3001;http://localhost:3000;http://127.0.0.1:3000;http://127.0.0.1:3001',
+  }),
   COMMON_RATE_LIMIT_MAX_REQUESTS: num({ default: 1000 }),
   COMMON_RATE_LIMIT_WINDOW_MS: num({ default: 1000 }),
-  MONGO_URL: url({ default: 'mongodb://0.0.0.0:27017/byelow-db' }),
+  MONGO_URL: url({ default: 'mongodb://0.0.0.0:27017/byelow' }),
   JWT_SECRET_KEY: str({ default: 'mySecret' }),
   JWT_EXPIRES_IN: str({ default: '1d' }),
   BCRYPT_SALT_ROUNDS: num({ default: 10 }),
@@ -64,5 +66,12 @@ export const env = cleanEnv(process.env, {
   CLOUDINARY_API_KEY: str({ default: '' }),
   CLOUDINARY_API_SECRET: str({ default: '' }),
   // Backend base URL
-  BACKEND_BASE_URL: str({ default: 'http://localhost:3000' }),
+  BACKEND_BASE_URL: str({ default: 'http://localhost:4000' }),
+
+  //dateforseo credentials
+  DATAFORSEO_LOGIN: str({ default: '' }),
+  DATAFORSEO_PASSWORD: str({ default: '' }),
+
+  // Domain analysis cache TTL (in days, default 30 days)
+  DOMAIN_ANALYSIS_CACHE_TTL_DAYS: num({ default: 30 }),
 });

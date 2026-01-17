@@ -16,7 +16,7 @@ import { logger } from '@/server';
 
 import { deleteFileFromR2 } from '@/common/utils/r2';
 
-const USER_RESPONSE_VALUES = 'firstName profilePicture lastName TFAEnabled username phone email googleOAuth';
+const USER_RESPONSE_VALUES = 'firstName profilePicture lastName TFAEnabled username phone email googleOAuth emailVerified phoneVerified status createdAt updatedAt';
 
 // get user
 export const getMe = async (req: Request, res: Response) => {
@@ -35,6 +35,8 @@ export const getMe = async (req: Request, res: Response) => {
       })
       .populate({ path: 'workspaces', select: '-__v' })
       .select(USER_RESPONSE_VALUES);
+  
+    console.log({ user });
 
     if (!user) {
       return APIResponse.error(res, 'Not authorized', null, StatusCodes.UNAUTHORIZED);

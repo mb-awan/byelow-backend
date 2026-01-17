@@ -214,15 +214,15 @@ export interface IUserPayload {
   firstName: string;
   lastName: string;
   role: UserRoles;
-  workspace: string;
-  currentAddress: {
+  workspace?: string;
+  currentAddress?: {
     street: string;
     city: string;
     state: string;
     zip: string;
     country: string;
   };
-  postalAddress: {
+  postalAddress?: {
     street: string;
     city: string;
     state: string;

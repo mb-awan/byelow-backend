@@ -13,7 +13,7 @@ The Byelow Backend API provides endpoints for:
 ## Base URL
 
 ```
-http://localhost:3000/api
+http://localhost:4000/api
 ```
 
 ## Authentication
@@ -326,8 +326,8 @@ All API responses follow this structure:
 ## Swagger Documentation
 
 Interactive API documentation is available at:
-- **Swagger UI**: `http://localhost:3000/api/docs`
-- **OpenAPI JSON**: `http://localhost:3000/api/swagger.json`
+- **Swagger UI**: `http://localhost:4000/api/docs`
+- **OpenAPI JSON**: `http://localhost:4000/api/swagger.json`
 
 ## Database Seeding
 
@@ -347,9 +347,9 @@ This will create:
 - 5 sample DA/PA analyses
 
 **Default Credentials:**
-- Admin: `admin@byelow.com` / `Admin123!@#`
-- Demo: `demo@byelow.com` / `Demo123!@#`
-- Test: `test@byelow.com` / `Test123!@#`
+- Admin: `admin@byelow.net` / `Admin123!@#`
+- Demo: `info@byelow.net` / `info123!@#`
+- Test: `support@byelow.net` / `support123!@#`
 
 ## Error Codes
 
@@ -365,4 +365,12 @@ This will create:
 - Domain names are automatically lowercased
 - Project deletion is soft (status set to 'archived')
 - DA/PA analysis currently returns dummy data (real API integration pending)
+
+
+
+
+
+
+
+
 

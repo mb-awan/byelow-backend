@@ -1,0 +1,28 @@
+{
+  "version": "0.1.20251226",
+  "status_code": 20000,
+  "status_message": "Ok.",
+  "time": "0 sec.",
+  "cost": 0,
+  "tasks_count": 1,
+  "tasks_error": 1,
+  "tasks": [
+    {
+      "id": "01051244-1299-0269-0000-d46cba6c7897",
+      "status_code": 40207,
+      "status_message": "Access denied. Your IP is not whitelisted. You can modify your IP whitelist in the user panel https://app.dataforseo.com/api-access .",
+      "time": "0 sec.",
+      "cost": 0,
+      "result_count": 0,
+      "path": ["v3", "backlinks", "backlinks", "live"],
+      "data": {
+        "api": "backlinks",
+        "function": "backlinks",
+        "target": "https://muhammad-bilal-nadeem-awan.com",
+        "limit": 1000,
+        "order_by": ["rank,desc"]
+      },
+      "result": null
+    }
+  ]
+}

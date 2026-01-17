@@ -1,6 +1,6 @@
 import { z } from 'zod';
 
-const validaMongoIdSchema = z.string().regex(/^(?=[a-f\d]{24}$)(\d+[a-f]|[a-f]+\d)/i, 'Role must be a valid ObjectId');
+const validaMongoIdSchema = z.string().regex(/^(?=[a-f\d]{24}$)(\d+[a-f]|[a-f]+\d)/i, 'Invalid MongoDB ObjectId');
 
 export const UsernameValidationShcema = z
   .string({ required_error: 'username is required' })

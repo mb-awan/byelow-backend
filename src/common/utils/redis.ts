@@ -42,7 +42,7 @@ redisClient.on('connect', () => {
   logger.info('Connected to Redis');
 });
 
-redisClient.on('error', (err: Error) => {
+redisClient.on('error', (err: any) => {
   logger.error('Error connecting to Redis:', err);
   if (err.message.includes('ECONNREFUSED')) {
     logger.error('Redis connection refused - check if the redis server is installed and running');
@@ -62,7 +62,7 @@ redisClient.on('end', () => {
 (async () => {
   try {
     await redisClient.connect();
-  } catch (err) {
+  } catch (err: any) {
     logger.error('Failed to connect to Redis:', err);
     process.exit(1); // Exit the process if connection is critical
   }

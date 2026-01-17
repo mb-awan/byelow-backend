@@ -38,10 +38,36 @@ const DAPAAnalysisSchema = z.object({
   updatedAt: z.string().datetime(),
 });
 
+// Authority Response Schema (new structure)
+const AuthorityResponseSchema = z.object({
+  domain: z.string(),
+  url: z.string().url().optional(),
+  domainAuthority: z.number().min(0).max(100),
+  pageAuthority: z.number().min(0).max(100).optional(),
+  spamScore: z.number().min(0).max(100),
+  backlinks: z.object({
+    total: z.number().min(0),
+    dofollow: z.number().min(0),
+    nofollow: z.number().min(0),
+  }),
+  referringDomains: z.number().min(0),
+  signals: z.object({
+    domainAgeYears: z.number().min(0).optional(),
+    dofollowRatio: z.number().min(0).max(1),
+    linkQualityScore: z.number().min(0).max(1000),
+    anchorNaturalRatio: z.number().min(0).max(1).optional(),
+  }),
+  meta: z.object({
+    calculatedAt: z.string().datetime(),
+    dataSource: z.enum(['api', 'crawler', 'hybrid']),
+    cached: z.boolean(),
+  }),
+});
+
 const DAPAAnalysisResponseSchema = z.object({
   success: z.boolean(),
   message: z.string(),
-  data: DAPAAnalysisSchema.nullable(),
+  data: AuthorityResponseSchema.nullable(),
 });
 
 const DAPAAnalysisListResponseSchema = z.object({
@@ -59,10 +85,11 @@ daPaCheckerRegistry.registerPath({
   description: `
     Analyze a domain's Domain Authority (DA) and Page Authority (PA).
     - Authentication: Requires a valid JWT token.
-    - Validation: Domain must be in valid format.
+    - Validation: Domain must be in valid format. URL is optional (required for PA calculation).
     - Optional: Can associate analysis with a project by providing projectId.
-    - Returns: Complete DA/PA analysis with backlinks, anchor texts, and metrics.
-    - Note: Currently returns dummy data. Real API integration (Moz, Ahrefs) pending.
+    - Returns: Complete DA/PA analysis with backlinks, signals, and metrics.
+    - Flow: Validate input → Get backlink stats → Get on-page signals (if URL provided) → Calculate DA/PA/Spam → Cache + Respond
+    - Note: Currently uses mocked data. Real API integration (DataForSEO) pending.
   `,
   tags: ['DA/PA Checker'],
   security: [{ bearerAuth: [] }],
@@ -236,4 +263,3 @@ daPaCheckerRegistry.registerPath({
     },
   },
 });
-

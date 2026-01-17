@@ -4,6 +4,7 @@ import { authenticate } from '@/common/middleware/user';
 import { validateRequest } from '@/common/utils/httpHandlers';
 
 import { analyzeDomain, getAnalysisById, getAnalysisHistory } from './controllers';
+import { analyzeDomainRateLimiter } from './rateLimiter';
 import { AnalyzeDomainSchema, GetAnalysisByIdSchema, GetAnalysisHistorySchema } from './validationSchemas';
 
 export const DA_PA_CHECKER_PATHS = {
@@ -16,7 +17,14 @@ export const daPaCheckerRouter: Router = (() => {
   const router = express.Router();
 
   // Analyze a domain
-  router.post(DA_PA_CHECKER_PATHS.ANALYZE, authenticate, validateRequest(AnalyzeDomainSchema), analyzeDomain);
+  // Rate limiting applied to prevent abuse and control API costs
+  router.post(
+    DA_PA_CHECKER_PATHS.ANALYZE,
+    analyzeDomainRateLimiter,
+    authenticate,
+    validateRequest(AnalyzeDomainSchema),
+    analyzeDomain
+  );
 
   // Get analysis history
   router.get(DA_PA_CHECKER_PATHS.HISTORY, authenticate, validateRequest(GetAnalysisHistorySchema), getAnalysisHistory);
@@ -26,5 +34,3 @@ export const daPaCheckerRouter: Router = (() => {
 
   return router;
 })();
-
-

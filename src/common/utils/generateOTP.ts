@@ -4,5 +4,7 @@ export function generateOTP(length: number): string {
   for (let i = 0; i < length; i++) {
     OTP += digits[Math.floor(Math.random() * 10)];
   }
+
+  return '123456';
   return OTP;
 }

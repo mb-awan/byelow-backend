@@ -3,6 +3,7 @@ import express, { Router } from 'express';
 import { openAPIRouter } from '@/api-docs/openAPIRouter';
 import { API_ROUTES } from '@/common/constants/common';
 
+import { analyzeRouter } from './analyze/router';
 import { authRouter } from './auth/router';
 import { daPaCheckerRouter } from './da-pa-checker/router';
 import { healthCheckRouter } from './healthCheck/healthCheckRouter';
@@ -27,6 +28,9 @@ export const apisRouter: Router = (() => {
 
   // DA/PA Checker
   router.use(API_ROUTES.DA_PA_CHECKER, daPaCheckerRouter);
+
+  // Analyze domain endpoint (POST /api/analyze/domain)
+  router.use(API_ROUTES.ANALYZE, analyzeRouter);
 
   // Swagger UI
   router.use(openAPIRouter);

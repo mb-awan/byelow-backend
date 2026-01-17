@@ -72,3 +72,4 @@ export const seedSEOProjects = async (users: IUserDoc[]) => {
   return projects;
 };
 
+

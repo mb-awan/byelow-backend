@@ -1,7 +1,6 @@
 import '@/common/utils/db';
 
-// import '@/common/utils/redis';
-import bodyParser from 'body-parser';
+import '@/common/utils/redis';
 import cors from 'cors';
 import express, { Express } from 'express';
 import helmet from 'helmet';
@@ -16,6 +15,8 @@ import setupRoutes from './routes';
 
 const logger = pino({ name: 'server start' });
 
+console.log('here...');
+
 const app: Express = express();
 
 // Set the application to trust the reverse proxy
@@ -23,9 +24,10 @@ app.set('trust proxy', true);
 
 app.use(express.urlencoded({ extended: true }));
 
-app.use(bodyParser.json());
+// Middlewares
+app.use(express.json());
 
-// CORS configuration
+// CORS configuration - Enabled to fix Swagger UI connection issues
 const corsOptions = {
   origin: (origin: string | undefined, callback: (err: Error | null, allow?: boolean) => void) => {
     // Allow requests with no origin (like mobile apps, Postman, or Swagger UI from same origin)
@@ -89,9 +91,6 @@ app.use(requestLogger);
 
 // Static files
 app.use(express.static('public'));
-
-// Middlewares
-app.use(express.json());
 
 // static file
 app.use('/public', express.static(path.join(__dirname, 'public')));

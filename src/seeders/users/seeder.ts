@@ -20,7 +20,7 @@ const defaultUsers: SeedUser[] = [
     username: 'admin',
     firstName: 'Admin',
     lastName: 'User',
-    email: 'admin@byelow.com',
+    email: 'admin@byelow.net',
     password: 'Admin123!@#',
     emailVerified: true,
     status: UserStatus.ACTIVE,
@@ -29,8 +29,8 @@ const defaultUsers: SeedUser[] = [
     username: 'demo',
     firstName: 'Demo',
     lastName: 'User',
-    email: 'demo@byelow.com',
-    password: 'Demo123!@#',
+    email: 'info@byelow.net',
+    password: 'info123!@#',
     emailVerified: true,
     status: UserStatus.ACTIVE,
   },
@@ -38,8 +38,8 @@ const defaultUsers: SeedUser[] = [
     username: 'testuser',
     firstName: 'Test',
     lastName: 'User',
-    email: 'test@byelow.com',
-    password: 'Test123!@#',
+    email: 'support@byelow.com',
+    password: 'support123!@#',
     emailVerified: true,
     status: UserStatus.ACTIVE,
   },
@@ -70,7 +70,7 @@ export const seedUsers = async () => {
     const hashedPassword = await bcrypt.hash(userData.password, env.BCRYPT_SALT_ROUNDS);
 
     // Determine role - admin user gets admin role, others get user role
-    const roleId = userData.email === 'admin@byelow.com' && adminRole ? adminRole._id : userRole._id;
+    const roleId = userData.email === 'admin@byelow.net' && adminRole ? adminRole._id : userRole._id;
 
     // Create user
     const user = new User({
@@ -99,7 +99,7 @@ export const seedUsers = async () => {
     await user.save();
     users.push(user);
     console.log(
-      `✅ Created user: ${userData.email} with role: ${userData.email === 'admin@byelow.com' ? 'admin' : 'user'}`
+      `✅ Created user: ${userData.email} with role: ${userData.email === 'admin@byelow.net' ? 'admin' : 'user'}`
     );
   }
 

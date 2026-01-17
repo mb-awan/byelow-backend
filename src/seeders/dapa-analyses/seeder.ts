@@ -1,14 +1,8 @@
 import { DAPAAnalysis } from '@/common/models/dapaAnalysis';
-import type { IUserDoc } from '@/common/models/user';
 import type { ISEOProject } from '@/common/models/seoProject';
+import type { IUserDoc } from '@/common/models/user';
 
-const sampleDomains = [
-  'example.com',
-  'test-site.com',
-  'demo-website.com',
-  'sample-domain.com',
-  'mywebsite.io',
-];
+const sampleDomains = ['example.com', 'test-site.com', 'demo-website.com', 'sample-domain.com', 'mywebsite.io'];
 
 // Generate realistic-looking DA/PA analysis data
 const generateAnalysisData = (domain: string) => {
@@ -100,4 +94,5 @@ export const seedDAPAAnalyses = async (users: IUserDoc[], projects: ISEOProject[
 
   return analyses;
 };
+
 
