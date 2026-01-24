@@ -9,11 +9,7 @@ import { APIResponse } from './response';
 export const handleError = (error: any, res: Response, customMessage?: string) => {
   if (error.response) {
     // Axios error: server responded with a status other than 2xx
-    logger.error('Error response from external service:', {
-      status: error.response.status,
-      headers: error.response.headers,
-      data: error.response.data,
-    });
+    logger.error('Error response from external service:');
     return APIResponse.error(
       res,
       customMessage || 'Failed to retrieve data from the external service.',
@@ -31,7 +27,7 @@ export const handleError = (error: any, res: Response, customMessage?: string) =
     );
   } else if (error instanceof SyntaxError) {
     // Handle syntax errors (e.g., JSON parsing issues)
-    logger.error('Syntax error encountered:', error.message);
+    logger.error('Syntax error encountered:');
     return APIResponse.error(
       res,
       customMessage || 'A syntax error occurred while processing the request.',
@@ -40,7 +36,7 @@ export const handleError = (error: any, res: Response, customMessage?: string) =
     );
   } else if (error instanceof TypeError) {
     // Handle type errors (e.g., accessing properties of undefined)
-    logger.error('Type error encountered:', error.message);
+    logger.error('Type error encountered:');
     return APIResponse.error(
       res,
       customMessage || 'A type error occurred in the request.',

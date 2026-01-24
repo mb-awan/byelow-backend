@@ -21,13 +21,3 @@ export const GetSEOProjectByIdSchema = z.object({
 export const DeleteSEOProjectSchema = z.object({
   id: commonValidations.validaMongoId,
 });
-
-
-
-
-
-
-
-
-
-

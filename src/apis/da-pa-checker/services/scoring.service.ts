@@ -22,15 +22,9 @@ export function calculateDA(signals: DASignals): number {
   const RD = logNormalize(signals.referringDomains, 1_000_000);
   const LQ = signals.linkQualityScore / 1000;
   const DF = ratio(signals.backlinksDofollow, signals.backlinksTotal);
-  const AG = signals.domainAgeYears
-    ? logNormalize(signals.domainAgeYears, 20)
-    : 0.3;
+  const AG = signals.domainAgeYears ? logNormalize(signals.domainAgeYears, 20) : 0.3;
 
-  const raw =
-    RD * 0.35 +
-    LQ * 0.25 +
-    DF * 0.15 +
-    AG * 0.15;
+  const raw = RD * 0.35 + LQ * 0.25 + DF * 0.15 + AG * 0.15;
 
   return Math.round(100 * Math.pow(raw, 0.8));
 }
@@ -42,19 +36,12 @@ export function calculateDA(signals: DASignals): number {
  * @param internalLinks - Number of internal links on the page
  * @returns PA score between 0 and 100
  */
-export function calculatePA(
-  pageRefDomains: number,
-  pageLinkQuality: number,
-  internalLinks: number
-): number {
+export function calculatePA(pageRefDomains: number, pageLinkQuality: number, internalLinks: number): number {
   const PRD = logNormalize(pageRefDomains, 100_000);
   const LQ = pageLinkQuality / 1000;
   const IL = logNormalize(internalLinks, 500);
 
-  const raw =
-    PRD * 0.45 +
-    LQ * 0.35 +
-    IL * 0.20;
+  const raw = PRD * 0.45 + LQ * 0.35 + IL * 0.2;
 
   return Math.round(100 * Math.pow(raw, 0.85));
 }
@@ -65,10 +52,7 @@ export function calculatePA(
  * @param anchorNaturalRatio - Ratio of natural anchor texts
  * @returns Spam score between 0 and 100 (higher = more spammy)
  */
-export function calculateSpamScore(
-  dofollowRatio: number,
-  anchorNaturalRatio: number
-): number {
+export function calculateSpamScore(dofollowRatio: number, anchorNaturalRatio: number): number {
   let score = 0;
 
   if (dofollowRatio > 0.95) score += 25;
@@ -77,10 +61,3 @@ export function calculateSpamScore(
 
   return Math.min(score, 100);
 }
-
-
-
-
-
-
-

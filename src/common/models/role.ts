@@ -1,7 +1,6 @@
 import mongoose, { Document, Schema } from 'mongoose';
 
 import { DB_MODELS } from '../constants/common';
-import { Permission } from './permission';
 
 export interface IRoleDoc extends Document {
   name: string;
@@ -36,12 +35,3 @@ const RoleSchema: Schema = new Schema<IRoleDoc>(
 );
 
 export const Role = mongoose.model<IRoleDoc>(DB_MODELS.ROLE, RoleSchema);
-
-
-
-
-
-
-
-
-

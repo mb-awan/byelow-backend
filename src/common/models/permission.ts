@@ -28,12 +28,3 @@ const PermissionSchema: Schema = new Schema<IPermissionDoc>(
 );
 
 export const Permission = mongoose.model<IPermissionDoc>(DB_MODELS.PERMISSION, PermissionSchema);
-
-
-
-
-
-
-
-
-

@@ -49,9 +49,7 @@ export const getSEOProjects = async (req: Request, res: Response) => {
       return sendResponse(res, false, 'User not authenticated', null, StatusCodes.UNAUTHORIZED);
     }
 
-    const projects = await SEOProject.find({ userId, status: 'active' })
-      .sort({ createdAt: -1 })
-      .exec();
+    const projects = await SEOProject.find({ userId, status: 'active' }).sort({ createdAt: -1 }).exec();
 
     return sendResponse(res, true, 'Projects retrieved successfully', projects, StatusCodes.OK);
   } catch (error) {
@@ -93,11 +91,7 @@ export const updateSEOProject = async (req: Request, res: Response) => {
       return sendResponse(res, false, 'User not authenticated', null, StatusCodes.UNAUTHORIZED);
     }
 
-    const project = await SEOProject.findOneAndUpdate(
-      { _id: id, userId },
-      { $set: updates },
-      { new: true }
-    ).exec();
+    const project = await SEOProject.findOneAndUpdate({ _id: id, userId }, { $set: updates }, { new: true }).exec();
 
     if (!project) {
       return sendResponse(res, false, 'Project not found', null, StatusCodes.NOT_FOUND);
@@ -118,10 +112,7 @@ export const deleteSEOProject = async (req: Request, res: Response) => {
       return sendResponse(res, false, 'User not authenticated', null, StatusCodes.UNAUTHORIZED);
     }
 
-    const project = await SEOProject.findOneAndUpdate(
-      { _id: id, userId },
-      { $set: { status: 'archived' } }
-    ).exec();
+    const project = await SEOProject.findOneAndUpdate({ _id: id, userId }, { $set: { status: 'archived' } }).exec();
 
     if (!project) {
       return sendResponse(res, false, 'Project not found', null, StatusCodes.NOT_FOUND);
@@ -132,4 +123,3 @@ export const deleteSEOProject = async (req: Request, res: Response) => {
     handleError(error, res);
   }
 };
-

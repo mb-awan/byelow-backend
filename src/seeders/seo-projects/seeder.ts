@@ -1,4 +1,6 @@
-import { SEOProject } from '@/common/models/seoProject';
+import { Document, Types } from 'mongoose';
+
+import { ISEOProject, SEOProject } from '@/common/models/seoProject';
 import type { IUserDoc } from '@/common/models/user';
 
 const sampleProjects = [
@@ -35,7 +37,9 @@ const sampleProjects = [
 ];
 
 export const seedSEOProjects = async (users: IUserDoc[]) => {
-  const projects = [];
+  const projects: (Document<unknown, object, ISEOProject, object, object> &
+    ISEOProject &
+    Required<{ _id: Types.ObjectId }> & { __v: number })[] = [];
 
   if (users.length === 0) {
     console.log('⚠️  No users found, skipping project seeding');
@@ -71,5 +75,3 @@ export const seedSEOProjects = async (users: IUserDoc[]) => {
 
   return projects;
 };
-
-

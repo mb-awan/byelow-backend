@@ -118,13 +118,3 @@ dapaAnalysisSchema.index({ userId: 1, createdAt: -1 });
 dapaAnalysisSchema.index({ domain: 1, createdAt: -1 });
 
 export const DAPAAnalysis = mongoose.model<IDAPAAnalysis>(DB_MODELS.DAPA_ANALYSIS, dapaAnalysisSchema);
-
-
-
-
-
-
-
-
-
-

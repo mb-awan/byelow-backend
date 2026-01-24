@@ -8,9 +8,9 @@ import {
   ChangePasswordValidationSchema,
   DeleteUserValidationSchema,
   OTPValidationSchema,
+  updateDescribedUserRoleValidateSchema,
   UpdatePasswordValidationSchema,
   UpdateUserValidationSchema,
-  updateDescribedUserRoleValidateSchema,
   userSchema,
 } from './validationSchemas';
 

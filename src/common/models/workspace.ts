@@ -48,12 +48,3 @@ WorkspaceSchema.index({ ownerId: 1 });
 WorkspaceSchema.index({ slug: 1 });
 
 export const Workspace = mongoose.model<IWorkspaceDoc>(DB_MODELS.WORKSPACE, WorkspaceSchema);
-
-
-
-
-
-
-
-
-

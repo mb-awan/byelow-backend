@@ -27,10 +27,3 @@ export async function scrapePage(url: string): Promise<PageSignals> {
     isIndexable: seed % 10 !== 0, // 90% indexable
   };
 }
-
-
-
-
-
-
-

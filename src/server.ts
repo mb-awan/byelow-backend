@@ -1,6 +1,6 @@
 import '@/common/utils/db';
-
 import '@/common/utils/redis';
+
 import cors from 'cors';
 import express, { Express } from 'express';
 import helmet from 'helmet';

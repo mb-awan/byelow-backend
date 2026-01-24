@@ -1,5 +1,7 @@
+import { Document, Types } from 'mongoose';
+
 import { AdminPermissions, UserRoles } from '@/common/constants/enums';
-import { Permission } from '@/common/models/permission';
+import { IPermissionDoc, Permission } from '@/common/models/permission';
 import { Role } from '@/common/models/role';
 
 const defaultPermissions = [
@@ -62,7 +64,9 @@ const defaultRoles = [
 ];
 
 export const seedRolesAndPermissions = async () => {
-  const permissions = [];
+  const permissions: (Document<unknown, object, IPermissionDoc, object, object> &
+    IPermissionDoc &
+    Required<{ _id: Types.ObjectId }> & { __v: number })[] = [];
   const roles = [];
 
   // Seed permissions
@@ -109,5 +113,3 @@ export const seedRolesAndPermissions = async () => {
 
   return { permissions, roles };
 };
-
-

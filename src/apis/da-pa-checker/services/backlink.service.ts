@@ -31,7 +31,3 @@ export async function getBacklinkStats(domain: string): Promise<BacklinkStats> {
     linkQualityScore: 480 + (seed % 400),
   };
 }
-
-
-
-

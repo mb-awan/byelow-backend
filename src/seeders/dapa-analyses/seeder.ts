@@ -1,4 +1,6 @@
-import { DAPAAnalysis } from '@/common/models/dapaAnalysis';
+import { Document, Types } from 'mongoose';
+
+import { DAPAAnalysis, IDAPAAnalysis } from '@/common/models/dapaAnalysis';
 import type { ISEOProject } from '@/common/models/seoProject';
 import type { IUserDoc } from '@/common/models/user';
 
@@ -52,7 +54,9 @@ const generateAnalysisData = (domain: string) => {
 };
 
 export const seedDAPAAnalyses = async (users: IUserDoc[], projects: ISEOProject[]) => {
-  const analyses = [];
+  const analyses: (Document<unknown, unknown, IDAPAAnalysis, object, object> &
+    IDAPAAnalysis &
+    Required<{ _id: Types.ObjectId }> & { __v: number })[] = [];
 
   if (users.length === 0) {
     console.log('⚠️  No users found, skipping DA/PA analysis seeding');
@@ -94,5 +98,3 @@ export const seedDAPAAnalyses = async (users: IUserDoc[], projects: ISEOProject[
 
   return analyses;
 };
-
-

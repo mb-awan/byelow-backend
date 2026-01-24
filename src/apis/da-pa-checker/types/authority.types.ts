@@ -26,10 +26,3 @@ export interface AuthorityResponse {
     cached: boolean;
   };
 }
-
-
-
-
-
-
-

@@ -3,13 +3,7 @@ import express, { Router } from 'express';
 import { authenticate } from '@/common/middleware/user';
 import { validateRequest } from '@/common/utils/httpHandlers';
 
-import {
-  createSEOProject,
-  deleteSEOProject,
-  getSEOProjectById,
-  getSEOProjects,
-  updateSEOProject,
-} from './controllers';
+import { createSEOProject, deleteSEOProject, getSEOProjectById, getSEOProjects, updateSEOProject } from './controllers';
 import {
   CreateSEOProjectSchema,
   DeleteSEOProjectSchema,
@@ -32,26 +26,36 @@ export const seoProjectsRouter: Router = (() => {
   router.get(SEO_PROJECTS_PATHS.GET_PROJECTS, authenticate, getSEOProjects);
 
   // Create a new project
-  router.post(SEO_PROJECTS_PATHS.CREATE_PROJECT, authenticate, validateRequest(CreateSEOProjectSchema), createSEOProject);
+  router.post(
+    SEO_PROJECTS_PATHS.CREATE_PROJECT,
+    authenticate,
+    validateRequest(CreateSEOProjectSchema),
+    createSEOProject
+  );
 
   // Get a project by ID
-  router.get(SEO_PROJECTS_PATHS.GET_PROJECT_BY_ID, authenticate, validateRequest(GetSEOProjectByIdSchema), getSEOProjectById);
+  router.get(
+    SEO_PROJECTS_PATHS.GET_PROJECT_BY_ID,
+    authenticate,
+    validateRequest(GetSEOProjectByIdSchema),
+    getSEOProjectById
+  );
 
   // Update a project
-  router.patch(SEO_PROJECTS_PATHS.UPDATE_PROJECT, authenticate, validateRequest(UpdateSEOProjectSchema), updateSEOProject);
+  router.patch(
+    SEO_PROJECTS_PATHS.UPDATE_PROJECT,
+    authenticate,
+    validateRequest(UpdateSEOProjectSchema),
+    updateSEOProject
+  );
 
   // Delete a project (soft delete by archiving)
-  router.delete(SEO_PROJECTS_PATHS.DELETE_PROJECT, authenticate, validateRequest(DeleteSEOProjectSchema), deleteSEOProject);
+  router.delete(
+    SEO_PROJECTS_PATHS.DELETE_PROJECT,
+    authenticate,
+    validateRequest(DeleteSEOProjectSchema),
+    deleteSEOProject
+  );
 
   return router;
 })();
-
-
-
-
-
-
-
-
-
-
