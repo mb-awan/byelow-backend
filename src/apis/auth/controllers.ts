@@ -549,8 +549,10 @@ export const googleOAuthCallBack = async (req: Request, res: Response) => {
         members: [],
       });
       if (image) {
-        const key = await uploadGoogleProfileImage(image, env.R2_BUCKET_NAME as any);
-        newUser.profilePicture = key;
+        const imageUrl = await uploadGoogleProfileImage(image);
+        if (imageUrl) {
+          newUser.profilePicture = imageUrl;
+        }
       }
 
       const workspace = await defaultWorkspace.save();

@@ -27,15 +27,32 @@ export const uploadFileToCloudinary = async (fileBuffer: Buffer) => {
 };
 
 export const deleteFileFromCloudinary = async (url: string) => {
-  const publicId = url.split('/').pop()?.split('.')[0];
   try {
-    if (publicId) {
-      await cloudinary.uploader.destroy(publicId);
-    } else {
-      throw new Error('Invalid URL');
+    // Extract public_id from Cloudinary URL
+    // Cloudinary URLs format: https://res.cloudinary.com/{cloud_name}/{resource_type}/upload/{transformations}/{version}/{public_id}.{format}
+    // Or: https://res.cloudinary.com/{cloud_name}/image/upload/{folder}/{public_id}.{format}
+    const urlParts = url.split('/');
+    const uploadIndex = urlParts.findIndex((part) => part === 'upload');
+
+    if (uploadIndex === -1) {
+      throw new Error('Invalid Cloudinary URL');
     }
+
+    // Get the path after 'upload'
+    const pathAfterUpload = urlParts.slice(uploadIndex + 1).join('/');
+
+    // Remove file extension and version if present
+    // Format: v1234567890/folder/public_id.format or folder/public_id.format
+    let publicId = pathAfterUpload.replace(/^v\d+\//, ''); // Remove version prefix
+    publicId = publicId.replace(/\.[^/.]+$/, ''); // Remove file extension
+
+    if (!publicId) {
+      throw new Error('Could not extract public_id from URL');
+    }
+
+    await cloudinary.uploader.destroy(publicId);
   } catch (error: any) {
-    throw new Error(error.message);
+    throw new Error(`Failed to delete file from Cloudinary: ${error.message}`);
   }
 };
 

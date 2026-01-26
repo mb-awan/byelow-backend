@@ -5,6 +5,6 @@ export function generateOTP(length: number): string {
     OTP += digits[Math.floor(Math.random() * 10)];
   }
 
-  return '123456';
+  // return '123456';
   return OTP;
 }

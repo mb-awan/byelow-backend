@@ -11,8 +11,8 @@ import { generateToken, hashPassword, isValidOTP, isValidPassword } from '@/comm
 import { sendVerificationEmailOTP } from '@/common/utils/emailService';
 import { env } from '@/common/utils/envConfig';
 import { generateOTP } from '@/common/utils/generateOTP';
-import { deleteFileFromR2 } from '@/common/utils/r2';
 import { APIResponse } from '@/common/utils/response';
+import { deleteFileFromCloudinary } from '@/common/utils/uploadFile';
 import { logger } from '@/server';
 
 const USER_RESPONSE_VALUES =
@@ -216,9 +216,9 @@ export const uploadProfilePic = async (req: Request, res: Response) => {
     if (user.profilePicture !== null && user.profilePicture !== key) {
       console.log(user.profilePicture);
       try {
-        await deleteFileFromR2(user.profilePicture);
+        await deleteFileFromCloudinary(user.profilePicture);
       } catch (err) {
-        console.error('Failed to delete old image from R2:', err);
+        console.error('Failed to delete old image from Cloudinary:', err);
       }
     }
 

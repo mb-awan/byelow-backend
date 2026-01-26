@@ -15,8 +15,6 @@ import setupRoutes from './routes';
 
 const logger = pino({ name: 'server start' });
 
-console.log('here...');
-
 const app: Express = express();
 
 // Set the application to trust the reverse proxy

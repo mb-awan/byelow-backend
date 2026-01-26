@@ -1,6 +1,6 @@
-import { S3Client } from '@aws-sdk/client-s3';
 import axios from 'axios';
 import bcrypt from 'bcrypt';
+import { v2 as cloudinary } from 'cloudinary';
 import jwt from 'jsonwebtoken';
 import qs from 'qs';
 
@@ -10,6 +10,15 @@ import { API_ROUTES } from '../constants/common';
 import { UserRoles } from '../constants/enums';
 import { IUserPayload, User } from '../models/user';
 import { env } from './envConfig';
+
+// Configure Cloudinary if credentials are provided
+if (env.CLOUDINARY_CLOUD_NAME && env.CLOUDINARY_API_KEY && env.CLOUDINARY_API_SECRET) {
+  cloudinary.config({
+    cloud_name: env.CLOUDINARY_CLOUD_NAME,
+    api_key: env.CLOUDINARY_API_KEY,
+    api_secret: env.CLOUDINARY_API_SECRET,
+  });
+}
 
 const { JWT_SECRET_KEY, JWT_EXPIRES_IN, BCRYPT_SALT_ROUNDS } = env;
 
@@ -95,9 +104,13 @@ export const getGoogleCode = async (code: string): Promise<any> => {
   return res.data;
 };
 
-export const uploadGoogleProfileImage = async (imageUrl: string, bucketName: string): Promise<string | null> => {
+export const uploadGoogleProfileImage = async (imageUrl: string): Promise<string | null> => {
   try {
-    const timestamp = Date.now();
+    // Check if Cloudinary credentials are configured
+    if (!env.CLOUDINARY_CLOUD_NAME || !env.CLOUDINARY_API_KEY || !env.CLOUDINARY_API_SECRET) {
+      console.warn('Cloudinary credentials not configured, skipping image upload');
+      return null;
+    }
 
     // Fetch the image from Google's URL
     const response = await fetch(imageUrl);
@@ -105,49 +118,32 @@ export const uploadGoogleProfileImage = async (imageUrl: string, bucketName: str
       throw new Error(`Failed to fetch image: ${response.statusText}`);
     }
 
-    // Get the image data as an ArrayBuffer
-    const imageBuffer = await response.arrayBuffer();
+    // Get the image data as a Buffer
+    const imageBuffer = Buffer.from(await response.arrayBuffer());
 
-    // Get content type from response headers or default to image/jpeg
-    const contentType = response.headers.get('content-type') || 'image/jpeg';
-
-    // Determine file extension based on content type
-    let extension = 'jpg';
-    if (contentType.includes('png')) extension = 'png';
-    if (contentType.includes('gif')) extension = 'gif';
-    if (contentType.includes('webp')) extension = 'webp';
-
-    // Create a unique key for the image
-    const avatarKey = `profiles/${timestamp}.${extension}`;
-
-    // Check if R2 credentials are configured
-    if (!env.R2_BUCKET_URL || !env.R2_ACCESS_KEY_ID || !env.R2_SECRET_ACCESS_KEY) {
-      console.warn('R2 credentials not configured, skipping image upload');
-      return null;
-    }
-
-    // Create S3 client for R2
-    const s3Client = new S3Client({
-      endpoint: env.R2_BUCKET_URL,
-      region: 'auto',
-      credentials: {
-        accessKeyId: env.R2_ACCESS_KEY_ID,
-        secretAccessKey: env.R2_SECRET_ACCESS_KEY,
-      },
+    // Upload to Cloudinary
+    return new Promise((resolve, reject) => {
+      cloudinary.uploader
+        .upload_stream(
+          {
+            folder: 'profiles',
+            resource_type: 'image',
+            transformation: [{ width: 400, height: 400, crop: 'fill', gravity: 'face' }],
+          },
+          (error, result) => {
+            if (error) {
+              console.error('Error uploading Google profile image to Cloudinary:', error);
+              return reject(null);
+            }
+            if (result && result.secure_url) {
+              resolve(result.secure_url);
+            } else {
+              reject(null);
+            }
+          }
+        )
+        .end(imageBuffer);
     });
-
-    // Upload to R2
-    const { PutObjectCommand } = await import('@aws-sdk/client-s3');
-    const command = new PutObjectCommand({
-      Bucket: bucketName || env.R2_BUCKET_NAME,
-      Key: avatarKey,
-      Body: Buffer.from(imageBuffer),
-      ContentType: contentType,
-    });
-
-    await s3Client.send(command);
-
-    return avatarKey;
   } catch (error) {
     console.error('Error uploading Google profile image:', error);
     return null;
