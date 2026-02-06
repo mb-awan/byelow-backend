@@ -1,0 +1,44 @@
+# Virtual environment (Docker builds its own)
+venv
+.venv
+env
+
+# Python cache and bytecode
+__pycache__
+*.py[cod]
+*$py.class
+*.pyo
+*.pyd
+.Python
+
+# Distribution / build
+*.egg-info
+.eggs
+dist
+build
+*.egg
+
+# Testing and coverage
+.pytest_cache
+.mypy_cache
+.coverage
+htmlcov
+.tox
+
+# Environment and secrets
+.env
+.env.*
+*.env
+
+# Git
+.git
+.gitignore
+
+# IDE and OS
+.vscode
+.idea
+.DS_Store
+*.log
+
+# Docs (not needed in image)
+README.md
