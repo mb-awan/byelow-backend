@@ -5,9 +5,10 @@ This document summarizes the cleanup performed to make `byelow-backend` specific
 ## Removed APIs and Features
 
 ### Removed API Routes
+
 - ✅ **Bluesky API** - Social media posting to Bluesky
 - ✅ **YouTube API** - YouTube integration
-- ✅ **Pinterest API** - Pinterest integration  
+- ✅ **Pinterest API** - Pinterest integration
 - ✅ **Posts API** - Social media post scheduling
 - ✅ **Threads API** - Threads social media integration
 - ✅ **Design Projects API** - Design project management (from unify-posts)
@@ -18,6 +19,7 @@ This document summarizes the cleanup performed to make `byelow-backend` specific
 - ✅ **Media API** - Media upload/management
 
 ### Removed Models
+
 - ✅ `Post` - Social media posts
 - ✅ `SocialMediaProfiles` - Social media profile connections
 - ✅ `Workspace` - Workspace model
@@ -28,20 +30,24 @@ This document summarizes the cleanup performed to make `byelow-backend` specific
 - ✅ `Notification` - Notifications
 
 ### Removed Jobs/Workers
+
 - ✅ `postsScheduler` - Scheduled post publishing
 - ✅ `worker` - Background job worker
 - ✅ `statusUpdateScheduler` - Post status updates
 - ✅ `queue` - Job queue system
 
 ### Removed Seeders
+
 - ✅ All seeders for unify-posts specific data
 
 ### Removed Utilities
+
 - ✅ `blueSky.ts` - Bluesky integration utilities
 
 ## Kept APIs and Features
 
 ### Core APIs
+
 - ✅ **Auth API** (`/api/auth`) - User authentication (sign in, sign up, OAuth)
 - ✅ **Users API** (`/api/users`) - User management
 - ✅ **SEO Projects API** (`/api/projects`, `/api/seo-projects`) - SEO project management
@@ -49,6 +55,7 @@ This document summarizes the cleanup performed to make `byelow-backend` specific
 - ✅ **Health Check** (`/api/health-check`) - API health status
 
 ### Models Kept
+
 - ✅ `User` - User model (simplified, role made optional)
 - ✅ `SEOProject` - SEO project model
 - ✅ `DAPAAnalysis` - DA/PA analysis results
@@ -56,18 +63,22 @@ This document summarizes the cleanup performed to make `byelow-backend` specific
 ## Simplified Features
 
 ### User Model
+
 - Role system made optional (can be added back later if needed)
 - Workspaces removed
 - Kept core user fields: email, password, profile, verification
 
 ### Authentication Middleware
+
 - `authenticate` - JWT token authentication (kept)
 - `authorize` - Simplified (removed role/permission checks, can be added back)
 
 ## Updated Configuration
 
 ### Environment Variables
+
 Removed:
+
 - Bluesky credentials
 - Pinterest credentials
 - AWS S3/R2 credentials (for media uploads)
@@ -75,6 +86,7 @@ Removed:
 - Unify-posts specific URLs
 
 Kept:
+
 - MongoDB connection
 - JWT secrets
 - CORS origins
@@ -83,7 +95,9 @@ Kept:
 - Redis (for caching/sessions if needed)
 
 ### Package Dependencies
+
 Removed:
+
 - `@atproto/api`, `@atproto/jwk-jose`, `@atproto/oauth-client-node` (Bluesky)
 - `@aws-sdk/*` (S3/R2 uploads)
 - `bullmq` (job queue)
@@ -92,6 +106,7 @@ Removed:
 - `multer`, `express-fileupload` (file uploads)
 
 Kept:
+
 - Core Express/TypeScript dependencies
 - MongoDB/Mongoose
 - JWT authentication
@@ -100,7 +115,9 @@ Kept:
 - Logging (pino)
 
 ### Scripts
+
 Removed:
+
 - `post-scheduler`
 - `worker`
 - `post-status-update-scheduler`
@@ -108,6 +125,7 @@ Removed:
 - `generate-bluesky-keys`
 
 Updated:
+
 - `watch:log` - Updated PM2 app name to `byelow-backend`
 
 ## Current API Structure
@@ -137,13 +155,3 @@ Updated:
 - User authentication is simplified but functional
 - All unify-posts specific features have been removed
 - The codebase is cleaner and easier to maintain
-
-
-
-
-
-
-
-
-
-

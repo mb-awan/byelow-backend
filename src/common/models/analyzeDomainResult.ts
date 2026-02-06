@@ -13,22 +13,27 @@ export interface IAnalyzeDomainResult extends Document {
     nofollow: number;
   };
   referringDomains: number;
-  source: 'dataforseo+internal';
+  source: 'dataforseo+internal' | 'ai-service';
   fetchedAt: Date;
   expiresAt: Date;
   rawSnapshot: {
-    dataforseo: {
+    dataforseo?: {
       referringDomains: number;
       backlinksTotal: number;
       backlinksDofollow: number;
       backlinksNofollow: number;
     };
-    internal: {
+    internal?: {
       linkMetricsSummary: {
         dofollowRatio: number;
         nofollowRatio: number;
         backlinkToDomainRatio: number;
       };
+    };
+    ai?: {
+      domain_authority: number;
+      page_authority: number;
+      url: string;
     };
   };
 }
@@ -86,7 +91,7 @@ const analyzeDomainResultSchema = new Schema<IAnalyzeDomainResult>(
     source: {
       type: String,
       required: true,
-      enum: ['dataforseo+internal'],
+      enum: ['dataforseo+internal', 'ai-service'],
       default: 'dataforseo+internal',
     },
     fetchedAt: {
@@ -101,17 +106,22 @@ const analyzeDomainResultSchema = new Schema<IAnalyzeDomainResult>(
     },
     rawSnapshot: {
       dataforseo: {
-        referringDomains: { type: Number, required: true },
-        backlinksTotal: { type: Number, required: true },
-        backlinksDofollow: { type: Number, required: true },
-        backlinksNofollow: { type: Number, required: true },
+        referringDomains: { type: Number, required: false },
+        backlinksTotal: { type: Number, required: false },
+        backlinksDofollow: { type: Number, required: false },
+        backlinksNofollow: { type: Number, required: false },
       },
       internal: {
         linkMetricsSummary: {
-          dofollowRatio: { type: Number, required: true },
-          nofollowRatio: { type: Number, required: true },
-          backlinkToDomainRatio: { type: Number, required: true },
+          dofollowRatio: { type: Number, required: false },
+          nofollowRatio: { type: Number, required: false },
+          backlinkToDomainRatio: { type: Number, required: false },
         },
+      },
+      ai: {
+        domain_authority: { type: Number, required: false },
+        page_authority: { type: Number, required: false },
+        url: { type: String, required: false },
       },
     },
   },

@@ -3,6 +3,7 @@ import { logger } from '@/server';
 import { AnalyzeDomainResult, IAnalyzeDomainResult } from '../models/analyzeDomainResult';
 import { env } from '../utils/envConfig';
 import redisClient from '../utils/redis';
+import { callAIServiceAnalyze } from './aiService.client';
 import { DataForSeoDomainMetrics, dataForSeoService } from './dataForSeo.service';
 import { calculateDA, calculatePA, calculateSpamScore } from './seo.calculations';
 
@@ -101,6 +102,37 @@ class DomainAnalysisService {
       logger.error(`MongoDB cache read error for domain ${domain}: ${error}`);
     }
     return null;
+  }
+
+  /**
+   * Save AI service result to MongoDB cache
+   */
+  private async saveToDbCacheFromAI(
+    domain: string,
+    aiData: { domain_authority: number; page_authority: number; url: string }
+  ): Promise<IAnalyzeDomainResult> {
+    const fetchedAt = new Date();
+    const expiresAt = new Date(fetchedAt.getTime() + this.getCacheTtlMs());
+    const result = new AnalyzeDomainResult({
+      domain,
+      da: aiData.domain_authority,
+      pa: aiData.page_authority,
+      spamScore: 0,
+      backlinks: { total: 0, dofollow: 0, nofollow: 0 },
+      referringDomains: 0,
+      source: 'ai-service',
+      fetchedAt,
+      expiresAt,
+      rawSnapshot: {
+        ai: {
+          domain_authority: aiData.domain_authority,
+          page_authority: aiData.page_authority,
+          url: aiData.url,
+        },
+      },
+    });
+    await result.save();
+    return result;
   }
 
   /**
@@ -250,13 +282,47 @@ class DomainAnalysisService {
   }
 
   /**
+   * Analyze a domain via AI service (when AI_SERVICE_URL is set). Caches in Redis + MongoDB.
+   */
+  private async analyzeDomainViaAI(domain: string): Promise<DomainAnalysisResult> {
+    const url = domain.startsWith('http') ? domain : `https://${domain}`;
+    const aiData = await callAIServiceAnalyze(url);
+    if (!aiData) {
+      throw new Error('AI service returned no data');
+    }
+    const fetchedAt = new Date();
+    const expiresAt = new Date(fetchedAt.getTime() + this.getCacheTtlMs());
+    const result: DomainAnalysisResult = {
+      domain: aiData.domain,
+      metrics: {
+        da: aiData.domain_authority,
+        pa: aiData.page_authority,
+        spamScore: 0,
+      },
+      backlinks: { total: 0, dofollow: 0, nofollow: 0 },
+      referringDomains: 0,
+      cached: false,
+      fetchedAt: fetchedAt.toISOString(),
+      expiresAt: expiresAt.toISOString(),
+    };
+    await this.saveToDbCacheFromAI(domain, {
+      domain_authority: aiData.domain_authority,
+      page_authority: aiData.page_authority,
+      url: aiData.url,
+    });
+    await this.setRedisCache(domain, result);
+    return result;
+  }
+
+  /**
    * Analyze a domain
    *
    * Flow:
    * 1. Check Redis cache (optional optimization)
    * 2. Check MongoDB cache
    * 3. If cache hit and not expired and forceRefresh=false → return cached
-   * 4. Else → fetch fresh data, save to DB, save to Redis, return
+   * 4. If AI_SERVICE_URL set → call AI service, cache in DB + Redis, return
+   * 5. Else → fetch from DataForSEO + internal calc, save to DB + Redis, return
    *
    * @param domain - Normalized domain string
    * @param forceRefresh - Force refresh even if cache exists
@@ -287,11 +353,17 @@ class DomainAnalysisService {
         }
       }
 
-      // 3. Fetch fresh data and calculate
+      // 3. If AI service is configured, use it and cache
+      if (env.AI_SERVICE_URL?.trim()) {
+        logger.info(`Fetching domain analysis from AI service: ${domain}`);
+        return await this.analyzeDomainViaAI(domain);
+      }
+
+      // 4. Fetch fresh data from DataForSEO and calculate
       logger.info(`Fetching fresh domain analysis data: ${domain}`);
       const { result, linkMetricsSummary } = await this.fetchAndCalculate(domain);
 
-      // 4. Save to MongoDB
+      // 5. Save to MongoDB
       const dataForSeoMetrics = {
         referringDomains: result.referringDomains,
         backlinksTotal: result.backlinks.total,
@@ -301,7 +373,7 @@ class DomainAnalysisService {
 
       await this.saveToDbCache(domain, dataForSeoMetrics, result.metrics, linkMetricsSummary);
 
-      // 5. Save to Redis
+      // 6. Save to Redis
       await this.setRedisCache(domain, result);
 
       return result;

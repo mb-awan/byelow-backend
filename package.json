@@ -18,7 +18,7 @@
     "start-docker:dev": "cross-env NODE_ENV=development.docker docker compose -f docker-compose.dev.yml up --build",
     "install-dependencies-docker:dev": "docker exec -it dev-api-server npm ci",
     "stop-docker:dev": "docker compose -f docker-compose.dev.yml down",
-    "start-docker:prod": "cross-env NODE_ENV=production docker compose -f docker-compose.yml up -d --force-recreate",
+    "start-docker:prod": "cross-env NODE_ENV=production docker compose -f docker-compose.yml up -d",
     "install-dependencies-docker:prod": "docker exec -it byelow-api-server npm ci",
     "docker-watch-app-logs:prod": "docker logs -f byelow-api-server",
     "stop-docker:prod": "docker compose -f docker-compose.yml down --remove-orphans",

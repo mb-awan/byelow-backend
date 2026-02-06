@@ -5,22 +5,26 @@ This document outlines the changes made to adapt `byelow-backend` to serve both 
 ## Changes Made
 
 ### 1. Package Updates
+
 - Updated `package.json` name from `unify-posts-backend` to `byelow-backend`
 - Updated description to reflect it serves both frontends
 
 ### 2. New Models Added
 
 #### SEO Project Model (`src/common/models/seoProject.ts`)
+
 - Represents SEO projects with fields: `name`, `domain`, `healthScore`, `status`
 - Different from the existing design `Project` model (which has `json`, `height`, `width` for design projects)
 
 #### DA/PA Analysis Model (`src/common/models/dapaAnalysis.ts`)
+
 - Represents Domain Authority/Page Authority analysis results
 - Includes metrics like `domainAuthority`, `pageAuthority`, `totalBacklinks`, `referringDomains`, etc.
 
 ### 3. New API Endpoints
 
 #### SEO Projects API (`/api/projects` and `/api/seo-projects`)
+
 - `GET /api/projects` - Get all SEO projects for authenticated user
 - `POST /api/projects` - Create a new SEO project
 - `GET /api/projects/:id` - Get a specific SEO project
@@ -28,6 +32,7 @@ This document outlines the changes made to adapt `byelow-backend` to serve both 
 - `DELETE /api/projects/:id` - Delete (archive) a SEO project
 
 #### DA/PA Checker API (`/api/da-pa-checker`)
+
 - `POST /api/da-pa-checker/analyze` - Analyze a domain's DA/PA
 - `GET /api/da-pa-checker/history` - Get analysis history
 - `GET /api/da-pa-checker/:id` - Get a specific analysis by ID
@@ -41,6 +46,7 @@ This document outlines the changes made to adapt `byelow-backend` to serve both 
 ### 5. Response Format
 
 The new SEO endpoints return responses in the format expected by the dashboard frontend:
+
 ```json
 {
   "success": true,
@@ -54,6 +60,7 @@ This differs from the existing backend's `ServiceResponse` format which uses `re
 ### 6. CORS Configuration
 
 CORS is configured to accept multiple origins. Set the `CORS_ORIGIN` environment variable with semicolon-separated URLs:
+
 ```
 CORS_ORIGIN=http://localhost:3000;http://localhost:3001;https://dashboard.byelow.com;https://app.byelow.com
 ```
@@ -70,7 +77,7 @@ Make sure to set the following environment variables:
 
 ## Next Steps
 
-1. **Update Dashboard Frontend**: 
+1. **Update Dashboard Frontend**:
    - Ensure it points to the correct backend URL
    - The API endpoints should work as-is since they match the expected format
 
@@ -95,13 +102,3 @@ Make sure to set the following environment variables:
 - The DA/PA checker currently generates dummy data. You'll need to integrate with a real DA/PA service (like Moz, Ahrefs, etc.) in the future
 - User authentication is required for all SEO endpoints
 - The existing design projects functionality has been moved to `/api/design-projects` to avoid conflicts
-
-
-
-
-
-
-
-
-
-

@@ -60,27 +60,21 @@ Run `npm install` to install all required packages.
     ```bash
     npm run stop-docker:dev
     ```
-- 🚀 **Production Workflow:**
-  - **Create `.env.production.docker`:** Copy `.env.example` to `.env.production.docker`.
-  - **Start Application:** To start the Docker container in production mode:
-    ```bash
-    npm run start-docker:prod
-    ```
-  - **Install Dependencies:** If dependencies aren't installed automatically, run:
-    ```bash
-    npm run install-dependencies-docker:prod
-    ```
-  - **Stop Application:** To stop the Docker container:
-    ```bash
-    npm run stop-docker:prod
-    ```
+- 🚀 **Production Workflow (Docker):**
+  - **Redis & DB:** Use **cloud Redis** and **MongoDB** (not run in Docker). Set `REDIS_HOST`, `REDIS_PORT`, `MONGO_URL`, etc. in `.env.production`.
+  - **AI service:** In `.env.production` set `AI_SERVICE_URL=http://ai-service:8000` so the API uses the containerized AI DA/PA service.
+  - **Start:** From project root run `docker compose -f docker-compose.yml up -d` (or `npm run start-docker:prod`). This starts the Express API (port 4000) and the AI service (port 8000).
+  - **Stop:** `docker compose -f docker-compose.yml down` (or `npm run stop-docker:prod`).
+  - See **DOCKER_AND_AI_SERVICE.md** for full steps, testing, and summary of changes.
 
 ## 📡 API Endpoints
 
 ### Health Check
+
 - `GET /api/health-check` - Check API health status
 
 ### Authentication
+
 - `POST /api/auth/signup` - User registration
 - `POST /api/auth/signin` - User login
 - `POST /api/auth/google` - Google OAuth authentication
@@ -88,11 +82,13 @@ Run `npm install` to install all required packages.
 - `POST /api/auth/reset-password` - Reset password
 
 ### Users
+
 - `GET /api/users/me` - Get current user profile
 - `PATCH /api/users/me` - Update user profile
 - `POST /api/users/me/profile-pic` - Upload profile picture
 
 ### SEO Projects
+
 - `GET /api/projects` - Get all SEO projects for authenticated user
 - `POST /api/projects` - Create a new SEO project
 - `GET /api/projects/:id` - Get a specific SEO project
@@ -100,11 +96,13 @@ Run `npm install` to install all required packages.
 - `DELETE /api/projects/:id` - Delete (archive) a SEO project
 
 ### DA/PA Checker
+
 - `POST /api/da-pa-checker/analyze` - Analyze a domain's Domain Authority/Page Authority
 - `GET /api/da-pa-checker/history` - Get analysis history
 - `GET /api/da-pa-checker/:id` - Get a specific analysis by ID
 
 ### API Documentation
+
 - `GET /api/docs` - Swagger UI documentation
 
 ## 📁 Project Structure
@@ -139,7 +137,8 @@ Required environment variables (see `.env.example` for full list):
 - `JWT_SECRET_KEY` - JWT secret for token signing
 - `FRONTEND_URL` - Primary frontend URL
 - `CORS_ORIGIN` - Semicolon-separated list of allowed frontend URLs
-- `REDIS_HOST`, `REDIS_PORT` - Redis connection details
+- `REDIS_HOST`, `REDIS_PORT` - Redis connection (use cloud Redis in production; not run in Docker)
+- `AI_SERVICE_URL` - When set, DA/PA checker uses this AI service (e.g. `http://ai-service:8000` in Docker)
 - `SMTP_*` - Email configuration (for password reset, etc.)
 - `GOOGLE_CLIENT_ID`, `GOOGLE_CLIENT_SECRET` - Google OAuth credentials
 
@@ -158,6 +157,7 @@ Required environment variables (see `.env.example` for full list):
 ## 🚀 Deployment
 
 The backend can be deployed using:
+
 - **PM2**: `npm run start:pm2`
 - **Docker**: See Docker workflow above
 - **Traditional**: `npm run build && npm run start`

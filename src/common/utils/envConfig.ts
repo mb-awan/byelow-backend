@@ -74,4 +74,6 @@ export const env = cleanEnv(process.env, {
   GOOGLE_CLIENT_SECRET: str({ default: '' }),
   // Domain analysis cache TTL (in days, default 30 days)
   DOMAIN_ANALYSIS_CACHE_TTL_DAYS: num({ default: 30 }),
+  // AI service (DA/PA checker) — when set, Express DA/PA endpoint uses this instead of DataForSEO
+  AI_SERVICE_URL: str({ default: '' }),
 });
