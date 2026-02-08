@@ -297,10 +297,14 @@ class DomainAnalysisService {
       metrics: {
         da: aiData.domain_authority,
         pa: aiData.page_authority,
-        spamScore: 0,
+        spamScore: aiData.spam_score ?? 0,
       },
-      backlinks: { total: 0, dofollow: 0, nofollow: 0 },
-      referringDomains: 0,
+      backlinks: {
+        total: aiData.backlinks?.total ?? 0,
+        dofollow: aiData.backlinks?.dofollow ?? 0,
+        nofollow: aiData.backlinks?.nofollow ?? 0,
+      },
+      referringDomains: aiData.referring_domains ?? 0,
       cached: false,
       fetchedAt: fetchedAt.toISOString(),
       expiresAt: expiresAt.toISOString(),

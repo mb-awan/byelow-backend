@@ -20,6 +20,7 @@ dist-ssr
 .env.test.docker
 .env.production.docker
 .env.production
+.env.development
 
 # Editor directories and files
 .vscode/*

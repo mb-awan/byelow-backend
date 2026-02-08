@@ -3,16 +3,22 @@ import axios, { AxiosError } from 'axios';
 import { env } from '../utils/envConfig';
 
 /**
- * Response shape from AI service POST /api/v1/analyze
+ * Response shape from AI service POST /api/v1/analyze (aligned with Python AuthorityScore)
  */
 export interface AIAnalyzeResponse {
   success: boolean;
   data?: {
     domain_authority: number;
     page_authority: number;
-    label?: string;
     domain: string;
     url: string;
+    /** Optional; Python returns this (0–100). */
+    spam_score?: number;
+    /** Optional; Python returns estimated referring domains count. */
+    referring_domains?: number;
+    /** Optional; Python returns estimated backlinks. */
+    backlinks?: { total?: number; dofollow?: number; nofollow?: number };
+    label?: string;
   };
   error?: string;
 }
