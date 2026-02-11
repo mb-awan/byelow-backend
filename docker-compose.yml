@@ -1,4 +1,5 @@
-# Byelow Backend — API + AI service. Redis and DB are external (cloud / your host).
+# Byelow Backend — API + AI service (DA/PA + Website Auditor on port 8000).
+# Redis and DB are external (cloud / your host).
 version: '3.8'
 
 services:
@@ -20,7 +21,7 @@ services:
     networks:
       - app-network
 
-  # AI Service (DA/PA checker — FastAPI)
+  # AI Service — single FastAPI app: DA/PA checker + Website Auditor (port 8000)
   ai-service:
     container_name: byelow-ai-service
     build:

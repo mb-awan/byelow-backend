@@ -9,6 +9,7 @@ import { daPaCheckerRouter } from './da-pa-checker/router';
 import { healthCheckRouter } from './healthCheck/healthCheckRouter';
 import { seoProjectsRouter } from './seo-projects/router';
 import { usersRouter } from './users/router';
+import { websiteAuditRouter } from './website-auditor/router';
 
 export const apisRouter: Router = (() => {
   const router = express.Router();
@@ -28,6 +29,9 @@ export const apisRouter: Router = (() => {
 
   // DA/PA Checker
   router.use(API_ROUTES.DA_PA_CHECKER, daPaCheckerRouter);
+
+  // Website Auditor (SEO)
+  router.use(API_ROUTES.WEBSITE_AUDIT, websiteAuditRouter);
 
   // Analyze domain endpoint (POST /api/analyze/domain)
   router.use(API_ROUTES.ANALYZE, analyzeRouter);

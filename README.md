@@ -62,7 +62,7 @@ Run `npm install` to install all required packages.
     ```
 - 🚀 **Production Workflow (Docker):**
   - **Redis & DB:** Use **cloud Redis** and **MongoDB** (not run in Docker). Set `REDIS_HOST`, `REDIS_PORT`, `MONGO_URL`, etc. in `.env.production`.
-  - **AI service:** In `.env.production` set `AI_SERVICE_URL=http://ai-service:8000` so the API uses the containerized AI DA/PA service.
+  - **AI service:** In `.env.production` set `AI_SERVICE_URL=http://ai-service:8000` so the API uses the containerized AI service (DA/PA and Website Auditor).
   - **Start:** From project root run `docker compose -f docker-compose.yml up -d` (or `npm run start-docker:prod`). This starts the Express API (port 4000) and the AI service (port 8000).
   - **Stop:** `docker compose -f docker-compose.yml down` (or `npm run stop-docker:prod`).
   - See **DOCKER_AND_AI_SERVICE.md** for full steps, testing, and summary of changes.
@@ -101,6 +101,10 @@ Run `npm install` to install all required packages.
 - `GET /api/da-pa-checker/history` - Get analysis history
 - `GET /api/da-pa-checker/:id` - Get a specific analysis by ID
 
+### Website Auditor (SEO)
+
+- `POST /api/website-audit` - Audit a URL (technical, SEO, performance, security, accessibility). Requires `AI_SERVICE_URL`.
+
 ### API Documentation
 
 - `GET /api/docs` - Swagger UI documentation
@@ -109,22 +113,28 @@ Run `npm install` to install all required packages.
 
 ```
 byelow-backend/
+├── ai-services/               # Python FastAPI (DA/PA + Website Auditor on port 8000)
+│   ├── main.py               # Unified app entry
+│   ├── Dockerfile
+│   ├── da-pa-checker/         # DA/PA checker module
+│   └── website-auditor/      # Website auditor module
 ├── src/
-│   ├── apis/                    # API routes and controllers
-│   │   ├── auth/               # Authentication endpoints
-│   │   ├── users/              # User management
-│   │   ├── seo-projects/        # SEO project management
-│   │   ├── da-pa-checker/      # DA/PA analysis
-│   │   └── healthCheck/        # Health check endpoint
-│   ├── api-docs/               # Swagger/OpenAPI documentation
-│   ├── common/                 # Shared utilities and models
+│   ├── apis/                  # API routes and controllers
+│   │   ├── auth/              # Authentication endpoints
+│   │   ├── users/             # User management
+│   │   ├── seo-projects/      # SEO project management
+│   │   ├── da-pa-checker/     # DA/PA analysis
+│   │   ├── website-auditor/   # Website audit (SEO)
+│   │   └── healthCheck/       # Health check endpoint
+│   ├── api-docs/              # Swagger/OpenAPI documentation
+│   ├── common/                # Shared utilities and models
 │   │   ├── constants/         # Constants and enums
-│   │   ├── middleware/        # Express middleware
-│   │   ├── models/            # Mongoose models
+│   │   ├── middleware/       # Express middleware
+│   │   ├── models/           # Mongoose models
 │   │   └── utils/            # Utility functions
-│   ├── server.ts              # Express app setup
+│   ├── server.ts             # Express app setup
 │   └── index.ts              # Entry point
-├── .env.example              # Environment variables template
+├── .env.example               # Environment variables template
 ├── package.json
 └── tsconfig.json
 ```
@@ -138,7 +148,7 @@ Required environment variables (see `.env.example` for full list):
 - `FRONTEND_URL` - Primary frontend URL
 - `CORS_ORIGIN` - Semicolon-separated list of allowed frontend URLs
 - `REDIS_HOST`, `REDIS_PORT` - Redis connection (use cloud Redis in production; not run in Docker)
-- `AI_SERVICE_URL` - When set, DA/PA checker uses this AI service (e.g. `http://ai-service:8000` in Docker)
+- `AI_SERVICE_URL` - When set, DA/PA and Website Auditor use this AI service (e.g. `http://ai-service:8000` in Docker)
 - `SMTP_*` - Email configuration (for password reset, etc.)
 - `GOOGLE_CLIENT_ID`, `GOOGLE_CLIENT_SECRET` - Google OAuth credentials
 
@@ -169,7 +179,7 @@ The backend can be deployed using:
 
 ## 💡 Notes
 
-- The backend is focused on SEO tools (projects, DA/PA checking)
+- The backend is focused on SEO tools (projects, DA/PA checking, website auditing)
 - User authentication supports email/password and Google OAuth
 - All endpoints require authentication except `/api/auth/*` and `/api/health-check`
-- DA/PA checker currently returns dummy data - integrate with real APIs (Moz, Ahrefs) for production
+- With `AI_SERVICE_URL` set, DA/PA and Website Auditor use the containerized Python AI service

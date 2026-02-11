@@ -48,3 +48,67 @@ export async function callAIServiceAnalyze(url: string): Promise<AIAnalyzeRespon
     throw new Error(`AI service error: ${message}`);
   }
 }
+
+/**
+ * Response shape from AI service POST /api/v1/audit (Website Auditor)
+ */
+export interface AIAuditResponse {
+  success: boolean;
+  data?: {
+    summary: {
+      url: string;
+      final_url: string;
+      overall_score: number;
+      overall_label: string;
+      total_issues: number;
+      issues_by_severity: Record<string, number>;
+    };
+    categories: Array<{
+      category: string;
+      score: number;
+      label: string;
+      earned_points: number;
+      total_points: number;
+      checks: Array<{ name: string; passed: boolean; weight: number; details?: string }>;
+      issues: Array<{
+        name: string;
+        severity: string;
+        category: string;
+        explanation: string;
+        recommendation: string;
+      }>;
+    }>;
+    all_issues: Array<{
+      name: string;
+      severity: string;
+      category: string;
+      explanation: string;
+      recommendation: string;
+    }>;
+  };
+  error?: string;
+}
+
+/**
+ * Call the AI Website Auditor service to audit a URL.
+ * Returns null if AI_SERVICE_URL is not set or the request fails.
+ */
+export async function callAIServiceAudit(url: string): Promise<AIAuditResponse['data'] | null> {
+  const baseUrl = env.AI_SERVICE_URL?.trim();
+  if (!baseUrl) {
+    return null;
+  }
+
+  const endpoint = `${baseUrl.replace(/\/$/, '')}/api/v1/audit`;
+  try {
+    const { data } = await axios.post<AIAuditResponse>(endpoint, { url }, { timeout: DEFAULT_TIMEOUT_MS });
+    if (data.success && data.data) {
+      return data.data;
+    }
+    return null;
+  } catch (err) {
+    const axiosError = err as AxiosError<{ detail?: string }>;
+    const message = axiosError.response?.data?.detail ?? axiosError.message;
+    throw new Error(`AI service error: ${message}`);
+  }
+}

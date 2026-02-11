@@ -5,6 +5,7 @@ export const API_ROUTES = {
   PROJECTS: '/projects',
   SEO_PROJECTS: '/seo-projects',
   DA_PA_CHECKER: '/da-pa-checker',
+  WEBSITE_AUDIT: '/website-audit',
   ANALYZE: '/analyze',
 };
 

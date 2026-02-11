@@ -9,7 +9,7 @@ from app.models.responses import AnalyzeResponse
 router = APIRouter()
 
 
-@router.post("/analyze", response_model=AnalyzeResponse)
+@router.post("/analyze", response_model=AnalyzeResponse, response_model_exclude_none=True)
 async def analyze_url(request: AnalyzeRequest) -> AnalyzeResponse:
     settings = Settings()
     orchestrator = AnalysisOrchestrator(settings)
