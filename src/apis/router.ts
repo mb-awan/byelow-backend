@@ -5,6 +5,7 @@ import { API_ROUTES } from '@/common/constants/common';
 
 import { analyzeRouter } from './analyze/router';
 import { authRouter } from './auth/router';
+import { contentOptimizationRouter } from './content-optimization/router';
 import { daPaCheckerRouter } from './da-pa-checker/router';
 import { healthCheckRouter } from './healthCheck/healthCheckRouter';
 import { seoProjectsRouter } from './seo-projects/router';
@@ -32,6 +33,9 @@ export const apisRouter: Router = (() => {
 
   // Website Auditor (SEO)
   router.use(API_ROUTES.WEBSITE_AUDIT, websiteAuditRouter);
+
+  // Content Optimization Checker
+  router.use(API_ROUTES.CONTENT_OPTIMIZATION, contentOptimizationRouter);
 
   // Analyze domain endpoint (POST /api/analyze/domain)
   router.use(API_ROUTES.ANALYZE, analyzeRouter);

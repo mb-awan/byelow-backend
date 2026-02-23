@@ -7,6 +7,7 @@ export const API_ROUTES = {
   DA_PA_CHECKER: '/da-pa-checker',
   WEBSITE_AUDIT: '/website-audit',
   ANALYZE: '/analyze',
+  CONTENT_OPTIMIZATION: '/content-optimization',
 };
 
 export const DB_MODELS = {
