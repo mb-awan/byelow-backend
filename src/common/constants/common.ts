@@ -8,6 +8,7 @@ export const API_ROUTES = {
   WEBSITE_AUDIT: '/website-audit',
   ANALYZE: '/analyze',
   CONTENT_OPTIMIZATION: '/content-optimization',
+  BACKLINK_INDEXER: '/backlink-indexer',
 };
 
 export const DB_MODELS = {

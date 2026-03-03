@@ -30,6 +30,8 @@ services:
     image: byelow/ai-service:latest
     ports:
       - '8000:8000'
+    env_file:
+      - .env.production
     networks:
       - app-network
 

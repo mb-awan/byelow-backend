@@ -1,0 +1,10 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(cd C:\\\\work\\\\New Professional Projects\\\\byelow-backend\\\\ai-services\\\\backlink-indexer:*)",
+      "Bash(head:*)",
+      "Bash(cd C:\\\\work\\\\New Professional Projects\\\\byelow-backend\\\\ai-services:*)",
+      "Bash(cd \"/c/work/New Professional Projects/byelow-backend\" && npx tsc --noEmit 2>&1)"
+    ]
+  }
+}

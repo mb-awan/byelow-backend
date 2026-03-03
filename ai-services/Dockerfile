@@ -1,4 +1,4 @@
-# Byelow AI Services — DA/PA checker + Website Auditor + Content Optimizer (single app on port 8000)
+# Byelow AI Services — DA/PA checker + Website Auditor + Content Optimizer + Backlink Indexer (single app on port 8000)
 FROM python:3.12-slim
 
 WORKDIR /app
@@ -12,6 +12,7 @@ COPY main.py .
 COPY da-pa-checker ./da-pa-checker
 COPY website-auditor ./website-auditor
 COPY content-optimization-checker ./content-optimization-checker
+COPY backlink-indexer ./backlink-indexer
 
 ENV PATH="/app/venv/bin:$PATH"
 EXPOSE 8000

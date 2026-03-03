@@ -214,3 +214,88 @@ export async function callAIServiceAudit(url: string): Promise<AIAuditResponse['
     throw new Error(`AI service error: ${message}`);
   }
 }
+
+/**
+ * Response shape from AI service POST /api/v1/backlink-index (Backlink Indexer)
+ */
+export interface AIBacklinkIndexResponse {
+  success: boolean;
+  data?: {
+    summary: {
+      target_domain: string;
+      target_url: string;
+      total_indexed: number;
+      follow_count: number;
+      nofollow_count: number;
+      text_links: number;
+      image_links: number;
+      unique_referring_domains: number;
+      link_positions: Record<string, number>;
+      analysis_timestamp: string;
+      discovery_sources_used: string[];
+    };
+    indexed_backlinks: Array<{
+      source_url: string;
+      target_url: string;
+      source_domain: string;
+      anchor_text: string;
+      link_type: string;
+      rel_attributes: string[];
+      link_position: string;
+      first_seen: string;
+      last_seen: string;
+      current_status: string;
+      is_follow: boolean;
+      http_status: number;
+      discovery_source: string;
+      verification_failed_reason?: string;
+    }>;
+    discovery_stats: {
+      dataforseo_candidates: number;
+      duckduckgo_candidates: number;
+      bing_candidates: number;
+      common_crawl_candidates: number;
+      total_candidates: number;
+      after_deduplication: number;
+    };
+    verification_stats: {
+      verified_active: number;
+      verified_broken: number;
+      link_not_found: number;
+      fetch_failed: number;
+      skipped: number;
+    };
+    warnings: string[];
+  };
+  error?: string;
+}
+
+/**
+ * Call the AI Backlink Indexer service.
+ * Returns null if AI_SERVICE_URL is not set or the request fails.
+ */
+export async function callAIServiceBacklinkIndex(payload: {
+  url: string;
+  max_backlinks?: number;
+  verify?: boolean;
+}): Promise<AIBacklinkIndexResponse['data'] | null> {
+  const baseUrl = env.AI_SERVICE_URL?.trim();
+  if (!baseUrl) {
+    return null;
+  }
+
+  const endpoint = `${baseUrl.replace(/\/$/, '')}/api/v1/backlink-index`;
+  try {
+    const { data } = await axios.post<AIBacklinkIndexResponse>(endpoint, payload, {
+      timeout: 120_000, // Backlink analysis can take longer (discovery + verification)
+    });
+    if (data.success && data.data) {
+      return data.data;
+    }
+    return null;
+  } catch (err) {
+    const axiosError = err as AxiosError<{ detail?: string }>;
+    const message = axiosError.response?.data?.detail ?? axiosError.message;
+    throw new Error(`AI service error: ${message}`);
+  }
+}

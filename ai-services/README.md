@@ -163,6 +163,27 @@ Invoke-RestMethod -Uri "http://localhost:8000/api/v1/audit" -Method POST -Conten
 
 ---
 
+## Backlink Indexer — getting non-zero results
+
+The backlink indexer (`POST /api/v1/backlink-index`) can return **summary stats as 0** if:
+
+1. **DataForSEO credentials are missing** — The pipeline uses DataForSEO as the primary source for pre-verified backlinks. Without it, only free sources (DuckDuckGo, Bing, Common Crawl) are used, which often return few or no results.
+
+**To get non-zero results:**
+
+- Set **`DATAFORSEO_LOGIN`** and **`DATAFORSEO_PASSWORD`** in the environment that the AI service uses. When running from `ai-services/`, the backlink-indexer loads env from (in order): `ai-services/.env`, repo root `../.env`, `../.env.development`, `../.env.production`. So you can:
+  - Put the same DataForSEO credentials in **repo root `.env.development`** or **`.env.production`** (same as the Node app), or
+  - Create **`ai-services/.env`** with:
+    ```env
+    DATAFORSEO_LOGIN=your_login
+    DATAFORSEO_PASSWORD=your_password
+    ```
+- Restart the AI service (e.g. uvicorn) after changing env.
+
+Free discovery (DDG/Bing/CC) is used as a fallback and can still return some candidates when DataForSEO is not set; verification then confirms which pages actually link to the target.
+
+---
+
 ## Docker (single image, port 8000)
 
 From the **ai-services** folder:
