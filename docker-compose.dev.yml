@@ -16,6 +16,7 @@ services:
     depends_on:
       - mongo_db
       - redis
+      - ai-service
 
   mongo_db:
     container_name: dev-unify-posts-mongo-db
@@ -31,6 +32,16 @@ services:
     container_name: dev-unify-posts-redis
     ports:
       - '6379:6379'
+
+  ai-service:
+    container_name: dev-ai-service
+    build:
+      context: ./ai-services
+      dockerfile: Dockerfile
+    env_file:
+      - .env.development.docker
+    ports:
+      - '8000:8000'
 
 volumes:
   mongo_db_unify_posts:

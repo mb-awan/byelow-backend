@@ -21,6 +21,9 @@ dist-ssr
 .env.production.docker
 .env.production
 .env.development
+!.env.development.docker.example
+!.env.production.docker.example
+!ai-services/.env.example
 
 # Editor directories and files
 .vscode/*
