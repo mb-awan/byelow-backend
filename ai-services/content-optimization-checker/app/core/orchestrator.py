@@ -241,8 +241,6 @@ def _build_critical_issues(ctx, keyword_result, structure_result) -> list[Critic
                         "title tag nor the H1 — the two most important keyword placement signals.",
         ))
 
-    # Intent mismatch signal — very low intent confidence
-    from app.analyzers.intent import IntentResult  # avoid circular at module level
     return issues
 
 
