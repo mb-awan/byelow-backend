@@ -1,10 +1,10 @@
-from pydantic import BaseModel, field_validator
+from pydantic import BaseModel, Field, field_validator
 
 from app.core.url_utils import URLValidationError, validate_and_normalize
 
 
 class AuditRequest(BaseModel):
-    url: str
+    url: str = Field(..., description="Target website URL to audit (e.g. https://example.com)")
 
     @field_validator("url")
     @classmethod

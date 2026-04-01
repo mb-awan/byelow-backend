@@ -9,7 +9,17 @@ from app.models.responses import AnalyzeResponse
 router = APIRouter()
 
 
-@router.post("/analyze", response_model=AnalyzeResponse, response_model_exclude_none=True)
+@router.post(
+    "/analyze",
+    response_model=AnalyzeResponse,
+    response_model_exclude_none=True,
+    summary="Analyze Domain Authority (DA) and Page Authority (PA)",
+    description=(
+        "POST a target URL to get estimated Domain Authority (DA), Page Authority (PA), "
+        "spam score, referring domains, and backlink counts."
+    ),
+    tags=["DA/PA Checker"],
+)
 async def analyze_url(request: AnalyzeRequest) -> AnalyzeResponse:
     settings = Settings()
     orchestrator = AnalysisOrchestrator(settings)

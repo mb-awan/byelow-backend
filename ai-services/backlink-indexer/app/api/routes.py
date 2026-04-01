@@ -20,6 +20,7 @@ router = APIRouter()
         "page and confirming the link exists. Returns a structured backlink index "
         "following professional SEO lifecycle standards."
     ),
+    tags=["Backlink Indexer"],
 )
 async def backlink_index(request: BacklinkIndexRequest) -> BacklinkIndexResponse:
     settings = Settings()

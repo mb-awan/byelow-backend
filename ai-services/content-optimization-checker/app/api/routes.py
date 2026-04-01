@@ -13,6 +13,13 @@ router = APIRouter()
     "/content-optimize",
     response_model=ContentOptimizeResponse,
     response_model_exclude_none=True,
+    summary="Optimize webpage content for SEO",
+    description=(
+        "POST a webpage URL and optional keywords/country/language to get a structured "
+        "content optimization report (intent detection, keyword placement, E-E-A-T signals, "
+        "and rewrite/recommendation checklist)."
+    ),
+    tags=["Content Optimization"],
 )
 async def content_optimize(request: OptimizeRequest) -> ContentOptimizeResponse:
     """Analyze and optimize webpage content for SEO.

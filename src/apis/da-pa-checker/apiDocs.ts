@@ -104,7 +104,7 @@ daPaCheckerRegistry.registerPath({
     },
   },
   responses: {
-    201: {
+    200: {
       description: 'Domain analysis completed successfully',
       content: {
         'application/json': {

@@ -1,10 +1,10 @@
 import re
 
-from pydantic import BaseModel, field_validator
+from pydantic import BaseModel, Field, field_validator
 
 
 class AnalyzeRequest(BaseModel):
-    url: str
+    url: str = Field(..., description="Target website URL to analyze (e.g. https://example.com)")
 
     @field_validator("url")
     @classmethod

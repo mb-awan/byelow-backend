@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from pydantic import BaseModel, field_validator
+from pydantic import BaseModel, Field, field_validator
 
 from app.core.url_utils import URLValidationError, validate_and_normalize
 
@@ -8,10 +8,10 @@ from app.core.url_utils import URLValidationError, validate_and_normalize
 class OptimizeRequest(BaseModel):
     """Request body for the content optimization endpoint."""
 
-    url: str
-    keywords: list[str] | None = None       # Target keyword(s) — optional
-    country: str | None = None              # Target country (e.g. "US") — optional
-    language: str | None = None             # Target language (e.g. "en") — optional
+    url: str = Field(..., description="Target webpage URL to optimize (e.g. https://example.com)")
+    keywords: list[str] | None = Field(default=None, description="Optional target keyword(s)")
+    country: str | None = Field(default=None, description='Optional target country (e.g. "US")')
+    language: str | None = Field(default=None, description='Optional target language (e.g. "en")')
 
     @field_validator("url")
     @classmethod

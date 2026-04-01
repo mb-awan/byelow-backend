@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from pydantic import BaseModel, field_validator
+from pydantic import BaseModel, Field, field_validator
 
 from app.core.url_utils import URLValidationError, validate_and_normalize
 
@@ -8,18 +8,14 @@ from app.core.url_utils import URLValidationError, validate_and_normalize
 class BacklinkIndexRequest(BaseModel):
     """Request body for the backlink indexer endpoint."""
 
-    url: str
-    """Target domain or full URL to find and verify backlinks for."""
+    url: str = Field(..., description="Target domain or full URL to find and verify backlinks for")
 
-    max_backlinks: int = 50
-    """Maximum number of backlinks to discover and index (capped at 100)."""
+    max_backlinks: int = Field(50, description="Maximum number of backlinks to discover and index (capped at 100)")
 
-    verify: bool = True
-    """
-    When True (default), each discovered candidate URL is fetched and
-    verified to confirm it actually contains a link to the target.
-    When False, candidates are returned as 'unverified'.
-    """
+    verify: bool = Field(
+        True,
+        description="If true, fetch and verify each candidate backlink. If false, return candidates as unverified.",
+    )
 
     @field_validator("url")
     @classmethod
