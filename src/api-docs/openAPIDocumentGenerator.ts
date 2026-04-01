@@ -5,6 +5,7 @@ import { authRegistry } from '@/apis/auth/apiDocs';
 import { backlinkIndexerRegistry } from '@/apis/backlink-indexer/apiDocs';
 import { contentOptimizationRegistry } from '@/apis/content-optimization/apiDocs';
 import { daPaCheckerRegistry } from '@/apis/da-pa-checker/apiDocs';
+import { domainInsightsRegistry } from '@/apis/domain-insights/apiDocs';
 import { healthCheckRegistry } from '@/apis/healthCheck/healthCheckRouter';
 import { seoProjectsRegistry } from '@/apis/seo-projects/apiDocs';
 import { userRegistry } from '@/apis/users/apiDocs';
@@ -22,6 +23,7 @@ export function generateOpenAPIDocument() {
     websiteAuditorRegistry,
     contentOptimizationRegistry,
     backlinkIndexerRegistry,
+    domainInsightsRegistry,
   ]);
 
   // Register the security scheme

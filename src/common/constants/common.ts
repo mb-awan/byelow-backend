@@ -9,6 +9,7 @@ export const API_ROUTES = {
   ANALYZE: '/analyze',
   CONTENT_OPTIMIZATION: '/content-optimization',
   BACKLINK_INDEXER: '/backlink-indexer',
+  DOMAIN_INSIGHTS: '/domain-insights',
 };
 
 export const DB_MODELS = {

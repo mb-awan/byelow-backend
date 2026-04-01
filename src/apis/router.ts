@@ -8,6 +8,7 @@ import { authRouter } from './auth/router';
 import { backlinkIndexerRouter } from './backlink-indexer/router';
 import { contentOptimizationRouter } from './content-optimization/router';
 import { daPaCheckerRouter } from './da-pa-checker/router';
+import { domainInsightsRouter } from './domain-insights/router';
 import { healthCheckRouter } from './healthCheck/healthCheckRouter';
 import { seoProjectsRouter } from './seo-projects/router';
 import { usersRouter } from './users/router';
@@ -40,6 +41,9 @@ export const apisRouter: Router = (() => {
 
   // Backlink Indexer
   router.use(API_ROUTES.BACKLINK_INDEXER, backlinkIndexerRouter);
+
+  // Domain Insights dashboard
+  router.use(API_ROUTES.DOMAIN_INSIGHTS, domainInsightsRouter);
 
   // Analyze domain endpoint (POST /api/analyze/domain)
   router.use(API_ROUTES.ANALYZE, analyzeRouter);
