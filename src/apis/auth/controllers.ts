@@ -154,7 +154,12 @@ export const registerUser = async (req: Request, res: Response) => {
       logger.info({ emailOTPOnRegister: otp });
     }
 
-    return APIResponse.success(res, 'User registered successfully', { token }, StatusCodes.CREATED);
+    return APIResponse.success(
+      res,
+      'User registered successfully',
+      { token, emailVerified: user.emailVerified },
+      StatusCodes.CREATED
+    );
   } catch (error: any) {
     logger.error('Error while registering 456', error);
     return APIResponse.error(res, 'Error while registering', error, StatusCodes.INTERNAL_SERVER_ERROR);
@@ -212,6 +217,7 @@ export const loginUser = async (req: Request, res: Response) => {
       return APIResponse.success(res, 'Logged in successfully', {
         token,
         TFAEnabled: true,
+        emailVerified: user.emailVerified,
       });
     }
 
@@ -236,6 +242,7 @@ export const loginUser = async (req: Request, res: Response) => {
     return APIResponse.success(res, 'Logged in successfully', {
       token,
       TFAEnabled: false,
+      emailVerified: user.emailVerified,
     });
   } catch (error) {
     console.log({ error });

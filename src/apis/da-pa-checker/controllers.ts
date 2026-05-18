@@ -6,6 +6,8 @@ import { domainAnalysisService } from '@/common/services/domainAnalysis.service'
 import { normalizeDomain } from '@/common/utils/domainValidator';
 import { handleError } from '@/common/utils/handleError';
 
+import { toDAPACheckerResponse, toDAPACheckerResponseFromHistory } from './mappers';
+
 // import { getBacklinkStats } from './services/backlink.service';
 // import { calculateDA, calculatePA, calculateSpamScore } from './services/scoring.service';
 // import { scrapePage } from './services/scraper.service';
@@ -174,23 +176,50 @@ const sendResponse = (res: Response, success: boolean, message: string, data: an
  */
 export async function analyzeDomain(req: Request, res: Response) {
   try {
-    const { domain, forceRefresh } = req.body;
+    const { domain, forceRefresh, projectId } = req.body;
+    const userId = req.user?.id;
 
     // Normalize domain (validation already done by schema)
     const normalizedDomain = normalizeDomain(domain);
 
-    // Log API usage for monitoring
-    // TODO: Add proper API usage logging/metrics collection
-    // logger.info(`Domain analysis request: ${normalizedDomain}, forceRefresh: ${forceRefresh}`);
-
     // Analyze domain using the service
     const result = await domainAnalysisService.analyzeDomain(normalizedDomain, forceRefresh || false);
+    const responseData = toDAPACheckerResponse(result);
 
-    // Return success response with proper HTTP status code
-    return sendResponse(res, true, 'Domain analysis completed successfully', result, StatusCodes.OK);
+    // Persist for history when authenticated
+    if (userId) {
+      try {
+        const analysis = new DAPAAnalysis({
+          domain: normalizedDomain,
+          domainAuthority: responseData.da,
+          pageAuthority: responseData.pa,
+          totalBacklinks: responseData.backlinksTotal,
+          referringDomains: responseData.referringDomains,
+          dofollowLinks: responseData.backlinksDofollow,
+          nofollowLinks: responseData.backlinksNofollow,
+          spamScore: responseData.spamScore,
+          organicTrafficEstimate: 0,
+          topBacklinks: [],
+          topAnchorTexts: [],
+          userId,
+          projectId: projectId || undefined,
+        });
+        await analysis.save();
+        return sendResponse(
+          res,
+          true,
+          'Domain analysis completed successfully',
+          { ...responseData, id: analysis._id.toString() },
+          StatusCodes.OK
+        );
+      } catch (saveError) {
+        // Analysis succeeded; history save is best-effort
+        return sendResponse(res, true, 'Domain analysis completed successfully', responseData, StatusCodes.OK);
+      }
+    }
+
+    return sendResponse(res, true, 'Domain analysis completed successfully', responseData, StatusCodes.OK);
   } catch (error) {
-    // Error handling is done by handleError middleware
-    // It will return appropriate HTTP status codes and error messages
     handleError(error, res);
   }
 }
@@ -205,8 +234,9 @@ export const getAnalysisHistory = async (req: Request, res: Response) => {
     }
 
     const analyses = await DAPAAnalysis.find({ userId }).sort({ createdAt: -1 }).limit(limit).exec();
+    const history = analyses.map(toDAPACheckerResponseFromHistory);
 
-    return sendResponse(res, true, 'Analysis history retrieved successfully', analyses, StatusCodes.OK);
+    return sendResponse(res, true, 'Analysis history retrieved successfully', history, StatusCodes.OK);
   } catch (error) {
     handleError(error, res);
   }
@@ -230,7 +260,13 @@ export const getAnalysisById = async (req: Request, res: Response) => {
       return sendResponse(res, false, 'Analysis not found', null, StatusCodes.NOT_FOUND);
     }
 
-    return sendResponse(res, true, 'Analysis retrieved successfully', analysis, StatusCodes.OK);
+    return sendResponse(
+      res,
+      true,
+      'Analysis retrieved successfully',
+      toDAPACheckerResponseFromHistory(analysis),
+      StatusCodes.OK
+    );
   } catch (error) {
     handleError(error, res);
   }

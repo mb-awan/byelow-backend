@@ -16,6 +16,7 @@ from fastapi import FastAPI
 from loguru import logger
 
 _base = os.path.dirname(os.path.abspath(__file__))
+sys.path.insert(0, _base)
 _da_path = os.path.join(_base, "da-pa-checker")
 _auditor_path = os.path.join(_base, "website-auditor")
 _content_path = os.path.join(_base, "content-optimization-checker")

@@ -31,6 +31,7 @@ from urllib.parse import urljoin, urlparse
 
 import httpx
 from bs4 import BeautifulSoup
+from html_parser import parse_html
 from loguru import logger
 
 from app.analyzers.classifier import (
@@ -147,7 +148,7 @@ async def verify_backlink(
             )
 
         # Parse HTML
-        soup = BeautifulSoup(response.text, "lxml")
+        soup = parse_html(response.text)
 
         # Check meta robots for noindex
         meta_robots = soup.find("meta", attrs={"name": re.compile(r"^robots$", re.I)})

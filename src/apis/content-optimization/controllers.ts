@@ -4,6 +4,8 @@ import { StatusCodes } from 'http-status-codes';
 import { callAIServiceContentOptimize } from '@/common/services/aiService.client';
 import { handleError } from '@/common/utils/handleError';
 
+import { toContentOptimizeDashboardResponse } from './mappers';
+
 const sendResponse = (res: Response, success: boolean, message: string, data: unknown, statusCode: number) =>
   res.status(statusCode).json({ success, message, data });
 
@@ -27,7 +29,14 @@ export async function contentOptimize(req: Request, res: Response) {
       );
     }
 
-    return sendResponse(res, true, 'Content optimization analysis completed successfully', result, StatusCodes.OK);
+    const responseData = toContentOptimizeDashboardResponse(result);
+    return sendResponse(
+      res,
+      true,
+      'Content optimization analysis completed successfully',
+      responseData,
+      StatusCodes.OK
+    );
   } catch (error) {
     handleError(error, res);
   }

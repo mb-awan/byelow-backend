@@ -7,6 +7,7 @@ from urllib.parse import urlparse
 import certifi
 import httpx
 from bs4 import BeautifulSoup
+from html_parser import parse_html
 from loguru import logger
 
 from app.config import Settings
@@ -92,7 +93,7 @@ def _parse_html(
     """Parse the full HTML and extract all SEO-relevant content."""
     domain = (urlparse(final_url).hostname or urlparse(url).hostname or "").lower()
 
-    soup = BeautifulSoup(html, "lxml")
+    soup = parse_html(html)
 
     # ── Title ──────────────────────────────────────────────────────────
     title_tag = soup.find("title")
@@ -151,7 +152,7 @@ def _parse_html(
             )
 
     # ── Content extraction (clean copy of soup) ────────────────────────
-    content_soup = BeautifulSoup(html, "lxml")
+    content_soup = parse_html(html)
     _strip_non_content(content_soup)
 
     main_el = _find_main_region(content_soup)

@@ -19,6 +19,7 @@ from urllib.parse import parse_qs, unquote, urlparse
 
 import httpx
 from bs4 import BeautifulSoup
+from html_parser import parse_html
 from loguru import logger
 
 from app.discoverers.base import DiscoveredCandidate, DiscoveryResult
@@ -68,7 +69,7 @@ def _extract_urls_from_html(html: str, target_domain: str) -> list[tuple[str, st
 
     Returns only URLs that do NOT belong to the target domain.
     """
-    soup = BeautifulSoup(html, "lxml")
+    soup = parse_html(html)
     results: list[tuple[str, str]] = []
 
     for result_div in soup.select(".result"):
@@ -109,7 +110,7 @@ def _extract_urls_from_html(html: str, target_domain: str) -> list[tuple[str, st
 
 def _extract_urls_from_lite_html(html: str, target_domain: str) -> list[tuple[str, str]]:
     """Parse DDG Lite HTML response and return (url, snippet) tuples."""
-    soup = BeautifulSoup(html, "lxml")
+    soup = parse_html(html)
     results: list[tuple[str, str]] = []
 
     for row in soup.select("table tr"):

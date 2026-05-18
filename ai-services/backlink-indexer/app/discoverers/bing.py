@@ -13,6 +13,7 @@ from urllib.parse import urlparse
 
 import httpx
 from bs4 import BeautifulSoup
+from html_parser import parse_html
 from loguru import logger
 
 from app.discoverers.base import DiscoveredCandidate, DiscoveryResult
@@ -39,7 +40,7 @@ _HEADERS = {
 
 def _extract_bing_results(html: str, target_domain: str) -> list[tuple[str, str]]:
     """Parse Bing HTML response and return (url, snippet) tuples."""
-    soup = BeautifulSoup(html, "lxml")
+    soup = parse_html(html)
     results: list[tuple[str, str]] = []
 
     for result in soup.select("li.b_algo"):

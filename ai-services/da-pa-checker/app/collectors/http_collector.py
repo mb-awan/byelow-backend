@@ -2,6 +2,7 @@ from urllib.parse import urlparse
 
 import httpx
 from bs4 import BeautifulSoup
+from html_parser import parse_html
 from loguru import logger
 
 from app.analyzers.base import AnalysisContext
@@ -43,7 +44,7 @@ class HttpCollector:
     def _extract_links(self, ctx: AnalysisContext) -> None:
         if not ctx.html:
             return
-        soup = BeautifulSoup(ctx.html, "lxml")
+        soup = parse_html(ctx.html)
         for anchor in soup.find_all("a", href=True):
             href: str = anchor["href"]
             if href.startswith(("http://", "https://")):

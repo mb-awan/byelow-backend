@@ -25,28 +25,75 @@ export interface AIAnalyzeResponse {
 
 const DEFAULT_TIMEOUT_MS = 30_000;
 
-/**
- * Call the AI DA/PA service to analyze a URL.
- * Returns null if AI_SERVICE_URL is not set or the request fails.
- */
-export async function callAIServiceAnalyze(url: string): Promise<AIAnalyzeResponse['data'] | null> {
+function formatAIServiceError(err: unknown, serviceLabel = 'AI service'): string {
+  if (axios.isAxiosError(err)) {
+    const axiosError = err as AxiosError<{ detail?: string; message?: string; error?: string }>;
+    const data = axiosError.response?.data;
+    const detail =
+      (typeof data?.detail === 'string' && data.detail) ||
+      (typeof data?.message === 'string' && data.message) ||
+      (typeof data?.error === 'string' && data.error);
+
+    if (detail) {
+      return `${serviceLabel} error: ${detail}`;
+    }
+
+    if (axiosError.code === 'ECONNREFUSED') {
+      const baseUrl = env.AI_SERVICE_URL?.trim() || 'AI_SERVICE_URL';
+      return `${serviceLabel} is not reachable at ${baseUrl}. Start it with: cd ai-services && uvicorn main:app --host 0.0.0.0 --port 8000`;
+    }
+
+    if (axiosError.code === 'ENOTFOUND') {
+      return `${serviceLabel} host not found (${env.AI_SERVICE_URL}). Use http://localhost:8000 for local development.`;
+    }
+
+    if (axiosError.code === 'ETIMEDOUT' || axiosError.code === 'ECONNABORTED') {
+      return `${serviceLabel} request timed out. The analysis may take longer than expected — try again.`;
+    }
+
+    if (axiosError.message && axiosError.message !== 'Error') {
+      return `${serviceLabel} error: ${axiosError.message}`;
+    }
+
+    return `${serviceLabel} is unavailable. Check that it is running on port 8000.`;
+  }
+
+  if (err instanceof Error && err.message) {
+    return err.message.startsWith(serviceLabel) ? err.message : `${serviceLabel} error: ${err.message}`;
+  }
+
+  return `${serviceLabel} is unavailable.`;
+}
+
+async function postToAIService<TResponse>(
+  endpoint: string,
+  body: unknown,
+  timeoutMs: number,
+  serviceLabel: string
+): Promise<TResponse['data'] | null> {
   const baseUrl = env.AI_SERVICE_URL?.trim();
   if (!baseUrl) {
     return null;
   }
 
-  const endpoint = `${baseUrl.replace(/\/$/, '')}/api/v1/analyze`;
+  const url = `${baseUrl.replace(/\/$/, '')}${endpoint}`;
   try {
-    const { data } = await axios.post<AIAnalyzeResponse>(endpoint, { url }, { timeout: DEFAULT_TIMEOUT_MS });
-    if (data.success && data.data) {
-      return data.data;
+    const { data } = await axios.post<TResponse>(url, body, { timeout: timeoutMs });
+    if (data && typeof data === 'object' && 'success' in data && data.success && 'data' in data && data.data) {
+      return data.data as TResponse['data'];
     }
     return null;
   } catch (err) {
-    const axiosError = err as AxiosError<{ detail?: string }>;
-    const message = axiosError.response?.data?.detail ?? axiosError.message;
-    throw new Error(`AI service error: ${message}`);
+    throw new Error(formatAIServiceError(err, serviceLabel));
   }
+}
+
+/**
+ * Call the AI DA/PA service to analyze a URL.
+ * Returns null if AI_SERVICE_URL is not set or the request fails.
+ */
+export async function callAIServiceAnalyze(url: string): Promise<AIAnalyzeResponse['data'] | null> {
+  return postToAIService<AIAnalyzeResponse>('/api/v1/analyze', { url }, DEFAULT_TIMEOUT_MS, 'AI service');
 }
 
 /**
@@ -130,25 +177,12 @@ export async function callAIServiceContentOptimize(payload: {
   country?: string;
   language?: string;
 }): Promise<AIContentOptimizeResponse['data'] | null> {
-  const baseUrl = env.AI_SERVICE_URL?.trim();
-  if (!baseUrl) {
-    return null;
-  }
-
-  const endpoint = `${baseUrl.replace(/\/$/, '')}/api/v1/content-optimize`;
-  try {
-    const { data } = await axios.post<AIContentOptimizeResponse>(endpoint, payload, {
-      timeout: DEFAULT_TIMEOUT_MS,
-    });
-    if (data.success && data.data) {
-      return data.data;
-    }
-    return null;
-  } catch (err) {
-    const axiosError = err as AxiosError<{ detail?: string }>;
-    const message = axiosError.response?.data?.detail ?? axiosError.message;
-    throw new Error(`AI service error: ${message}`);
-  }
+  return postToAIService<AIContentOptimizeResponse>(
+    '/api/v1/content-optimize',
+    payload,
+    DEFAULT_TIMEOUT_MS,
+    'AI service'
+  );
 }
 
 /**
@@ -196,23 +230,7 @@ export interface AIAuditResponse {
  * Returns null if AI_SERVICE_URL is not set or the request fails.
  */
 export async function callAIServiceAudit(url: string): Promise<AIAuditResponse['data'] | null> {
-  const baseUrl = env.AI_SERVICE_URL?.trim();
-  if (!baseUrl) {
-    return null;
-  }
-
-  const endpoint = `${baseUrl.replace(/\/$/, '')}/api/v1/audit`;
-  try {
-    const { data } = await axios.post<AIAuditResponse>(endpoint, { url }, { timeout: DEFAULT_TIMEOUT_MS });
-    if (data.success && data.data) {
-      return data.data;
-    }
-    return null;
-  } catch (err) {
-    const axiosError = err as AxiosError<{ detail?: string }>;
-    const message = axiosError.response?.data?.detail ?? axiosError.message;
-    throw new Error(`AI service error: ${message}`);
-  }
+  return postToAIService<AIAuditResponse>('/api/v1/audit', { url }, DEFAULT_TIMEOUT_MS, 'AI service');
 }
 
 /**
@@ -279,23 +297,5 @@ export async function callAIServiceBacklinkIndex(payload: {
   max_backlinks?: number;
   verify?: boolean;
 }): Promise<AIBacklinkIndexResponse['data'] | null> {
-  const baseUrl = env.AI_SERVICE_URL?.trim();
-  if (!baseUrl) {
-    return null;
-  }
-
-  const endpoint = `${baseUrl.replace(/\/$/, '')}/api/v1/backlink-index`;
-  try {
-    const { data } = await axios.post<AIBacklinkIndexResponse>(endpoint, payload, {
-      timeout: 120_000, // Backlink analysis can take longer (discovery + verification)
-    });
-    if (data.success && data.data) {
-      return data.data;
-    }
-    return null;
-  } catch (err) {
-    const axiosError = err as AxiosError<{ detail?: string }>;
-    const message = axiosError.response?.data?.detail ?? axiosError.message;
-    throw new Error(`AI service error: ${message}`);
-  }
+  return postToAIService<AIBacklinkIndexResponse>('/api/v1/backlink-index', payload, 120_000, 'AI service');
 }

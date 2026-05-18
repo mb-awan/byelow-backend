@@ -109,30 +109,48 @@ class DomainAnalysisService {
    */
   private async saveToDbCacheFromAI(
     domain: string,
-    aiData: { domain_authority: number; page_authority: number; url: string }
+    aiData: {
+      domain_authority: number;
+      page_authority: number;
+      url: string;
+      spam_score?: number;
+      referring_domains?: number;
+      backlinks?: { total?: number; dofollow?: number; nofollow?: number };
+    }
   ): Promise<IAnalyzeDomainResult> {
     const fetchedAt = new Date();
     const expiresAt = new Date(fetchedAt.getTime() + this.getCacheTtlMs());
-    const result = new AnalyzeDomainResult({
-      domain,
-      da: aiData.domain_authority,
-      pa: aiData.page_authority,
-      spamScore: 0,
-      backlinks: { total: 0, dofollow: 0, nofollow: 0 },
-      referringDomains: 0,
-      source: 'ai-service',
-      fetchedAt,
-      expiresAt,
-      rawSnapshot: {
-        ai: {
-          domain_authority: aiData.domain_authority,
-          page_authority: aiData.page_authority,
-          url: aiData.url,
+    const doc = await AnalyzeDomainResult.findOneAndUpdate(
+      { domain },
+      {
+        domain,
+        da: aiData.domain_authority,
+        pa: aiData.page_authority,
+        spamScore: aiData.spam_score ?? 0,
+        backlinks: {
+          total: aiData.backlinks?.total ?? 0,
+          dofollow: aiData.backlinks?.dofollow ?? 0,
+          nofollow: aiData.backlinks?.nofollow ?? 0,
+        },
+        referringDomains: aiData.referring_domains ?? 0,
+        source: 'ai-service',
+        fetchedAt,
+        expiresAt,
+        rawSnapshot: {
+          ai: {
+            domain_authority: aiData.domain_authority,
+            page_authority: aiData.page_authority,
+            url: aiData.url,
+          },
         },
       },
-    });
-    await result.save();
-    return result;
+      { upsert: true, new: true, setDefaultsOnInsert: true }
+    ).exec();
+
+    if (!doc) {
+      throw new Error(`Failed to cache AI analysis for ${domain}`);
+    }
+    return doc;
   }
 
   /**
@@ -309,11 +327,11 @@ class DomainAnalysisService {
       fetchedAt: fetchedAt.toISOString(),
       expiresAt: expiresAt.toISOString(),
     };
-    await this.saveToDbCacheFromAI(domain, {
-      domain_authority: aiData.domain_authority,
-      page_authority: aiData.page_authority,
-      url: aiData.url,
-    });
+    try {
+      await this.saveToDbCacheFromAI(domain, aiData);
+    } catch (cacheError) {
+      logger.warn(`MongoDB cache write failed for ${domain} (AI result still returned): ${cacheError}`);
+    }
     await this.setRedisCache(domain, result);
     return result;
   }
@@ -357,7 +375,7 @@ class DomainAnalysisService {
         }
       }
 
-      // 3. If AI service is configured, use it and cache
+      // 3. If AI service is configured, use it (preferred path for dashboard DA/PA)
       if (env.AI_SERVICE_URL?.trim()) {
         logger.info(`Fetching domain analysis from AI service: ${domain}`);
         return await this.analyzeDomainViaAI(domain);

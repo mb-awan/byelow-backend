@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 from bs4 import BeautifulSoup
+from html_parser import parse_html
 
 from app.auditors.base import (
     AuditCheck,
@@ -20,7 +21,7 @@ class SEOAuditor:
     def audit(self, ctx: AuditContext) -> AuditResult:
         checks: list[AuditCheck] = []
 
-        soup = BeautifulSoup(ctx.html, "lxml") if ctx.html else None
+        soup = parse_html(ctx.html) if ctx.html else None
 
         checks.append(self._check_title(soup))
         checks.append(self._check_meta_description(soup))

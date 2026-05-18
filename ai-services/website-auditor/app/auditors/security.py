@@ -3,6 +3,7 @@ from __future__ import annotations
 import re
 
 from bs4 import BeautifulSoup
+from html_parser import parse_html
 
 from app.auditors.base import (
     AuditCheck,
@@ -68,7 +69,7 @@ class SecurityAuditor:
                 details="Not applicable (site not on HTTPS or no HTML)",
             )
 
-        soup = BeautifulSoup(ctx.html, "lxml")
+        soup = parse_html(ctx.html)
 
         # Check for http:// references in src/href attributes on HTTPS pages
         mixed_elements: list[str] = []

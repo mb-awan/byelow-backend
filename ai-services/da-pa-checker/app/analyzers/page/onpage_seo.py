@@ -1,6 +1,7 @@
 import re
 
 from bs4 import BeautifulSoup
+from html_parser import parse_html
 
 from app.analyzers.base import AnalysisContext, SignalResult
 
@@ -21,7 +22,7 @@ class OnPageSeoAnalyzer:
                 details={"reason": "no_html"},
             )
 
-        soup = BeautifulSoup(context.html, "lxml")
+        soup = parse_html(context.html)
         scores: dict[str, float] = {}
 
         scores["title"] = self._score_title(soup)

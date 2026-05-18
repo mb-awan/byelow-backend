@@ -56,7 +56,23 @@ From the **ai-services** folder:
 uvicorn main:app --reload --host 0.0.0.0 --port 8000
 ```
 
+**Windows shortcut:** `.\start.ps1` (creates venv, installs deps, fixes `pydantic-core` if needed, starts on port 8000).
+
 The API is at **http://localhost:8000**.
+
+**Troubleshooting:** If content optimization fails with `Couldn't find a tree builder ... lxml`, run:
+
+```powershell
+.\venv\Scripts\pip.exe install lxml
+```
+
+The app will fall back to Python's built-in `html.parser` if lxml is missing, but installing lxml is recommended.
+
+**Troubleshooting:** If uvicorn fails with `No module named 'pydantic_core._pydantic_core'`, run:
+
+```powershell
+.\venv\Scripts\pip.exe install --force-reinstall pydantic-core
+```
 
 ---
 

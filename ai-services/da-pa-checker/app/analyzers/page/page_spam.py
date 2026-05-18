@@ -1,6 +1,7 @@
 import re
 
 from bs4 import BeautifulSoup
+from html_parser import parse_html
 
 from app.analyzers.base import AnalysisContext, SignalResult
 
@@ -25,7 +26,7 @@ class PageSpamAnalyzer:
                 details={"reason": "no_html"},
             )
 
-        soup = BeautifulSoup(context.html, "lxml")
+        soup = parse_html(context.html)
         penalties: dict[str, float] = {}
 
         penalties["thin_content"] = self._check_thin_content(soup)

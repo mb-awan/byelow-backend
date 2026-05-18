@@ -3,6 +3,7 @@ from __future__ import annotations
 import re
 
 from bs4 import BeautifulSoup
+from html_parser import parse_html
 
 from app.auditors.base import (
     AuditCheck,
@@ -25,7 +26,7 @@ class PerformanceAuditor:
     def audit(self, ctx: AuditContext) -> AuditResult:
         checks: list[AuditCheck] = []
 
-        soup = BeautifulSoup(ctx.html, "lxml") if ctx.html else None
+        soup = parse_html(ctx.html) if ctx.html else None
 
         checks.append(self._check_html_size(ctx))
         checks.append(self._check_external_resources(soup))

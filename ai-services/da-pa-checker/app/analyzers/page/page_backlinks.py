@@ -2,6 +2,7 @@ import math
 import re
 
 from bs4 import BeautifulSoup
+from html_parser import parse_html
 
 from app.analyzers.base import AnalysisContext, SignalResult
 
@@ -60,7 +61,7 @@ class PageBacklinkAnalyzer:
     def _check_canonical(ctx: AnalysisContext) -> float:
         if not ctx.html:
             return 0.0
-        soup = BeautifulSoup(ctx.html, "lxml")
+        soup = parse_html(ctx.html)
         canonical = soup.find("link", attrs={"rel": "canonical"})
         if canonical:
             href = canonical.get("href", "")
