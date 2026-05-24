@@ -10,6 +10,7 @@ import { contentOptimizationRouter } from './content-optimization/router';
 import { daPaCheckerRouter } from './da-pa-checker/router';
 import { domainInsightsRouter } from './domain-insights/router';
 import { healthCheckRouter } from './healthCheck/healthCheckRouter';
+import { publicRouter } from './public/router';
 import { seoProjectsRouter } from './seo-projects/router';
 import { usersRouter } from './users/router';
 import { websiteAuditRouter } from './website-auditor/router';
@@ -19,6 +20,9 @@ export const apisRouter: Router = (() => {
 
   // Health check
   router.use(API_ROUTES.HEALTH_CHECK, healthCheckRouter);
+
+  // Public (unauthenticated) endpoints — landing DA/PA checker
+  router.use(API_ROUTES.PUBLIC, publicRouter);
 
   // Authentication
   router.use(API_ROUTES.AUTH, authRouter);

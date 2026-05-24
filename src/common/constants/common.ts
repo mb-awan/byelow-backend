@@ -10,6 +10,7 @@ export const API_ROUTES = {
   CONTENT_OPTIMIZATION: '/content-optimization',
   BACKLINK_INDEXER: '/backlink-indexer',
   DOMAIN_INSIGHTS: '/domain-insights',
+  PUBLIC: '/public',
 };
 
 export const DB_MODELS = {
